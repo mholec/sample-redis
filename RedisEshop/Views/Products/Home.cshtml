@@ -1,0 +1,25 @@
+﻿@model ProductHomePageModel
+
+<div class="row">
+	<div class="col-md-9">
+		<h1>Nové produkty</h1>
+		<ul>
+			@foreach (var item in Model.LatestProducts)
+			{
+				<li>@item.Title</li>
+			}
+		</ul>
+	</div>
+	<div class="col-md-3">
+		<h2>Bestsellery</h2>
+		<ul>
+			@foreach (var item in Model.TopRatedProducts)
+			{
+				<li>@item.Title</li>
+			}
+		</ul>
+
+		<h2>Newsletter</h2>
+		<div></div>
+	</div>
+</div>

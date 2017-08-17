@@ -1,0 +1,51 @@
+﻿@model ProductListPageModel
+
+<div class="row">
+	<div class="col-md-12">
+		<form asp-controller="Products" asp-action="Index" method="post">
+
+			@{ var tags = CommonLists.GetAllTags();}
+
+			<div style="background: #eee; padding: 10px;">
+				<h3>Filtr</h3>
+				
+				@{ int order = 0;}
+				@foreach (var filter in CommonLists.TagTypes())
+				{
+					<p>
+						<strong>@filter.Value</strong>
+						
+						@foreach (var item in tags.Where(x => x.Type == filter.Key))
+						{
+							<input type="hidden" name="[@order].Id" value="@item.TagId" />
+							if (Model.SelectedTags.Contains(item.TagId))
+							{
+								<input type="checkbox" name="[@order].Selected" checked="checked" />
+							}
+							else
+							{
+								<input type="checkbox" name="[@order].Selected" />
+							}
+
+							@item.Title
+							<text> &nbsp; &nbsp; </text>
+							order = order + 1;
+						}
+					</p>
+				}
+
+
+			</div>
+
+			<input type="submit" value="Filtrovat" />
+		</form>
+
+		<h1>Přehled produktů</h1>
+		<ul>
+			@foreach (var item in Model.Products)
+			{
+				<li>@item.Title</li>
+			}
+		</ul>
+	</div>
+</div>

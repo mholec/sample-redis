@@ -43,7 +43,7 @@ namespace RedisEshop
 			services.AddDistributedRedisCache(options =>
 			{
 				options.Configuration = redisConnectionString;
-				options.InstanceName = "RedisEshop";
+				options.InstanceName = "distributedcache:"; // tvoří prefix klíčů (hashů)
 			});
 
 			// DBCONTEXT (ENTITY FRAMEWORK)

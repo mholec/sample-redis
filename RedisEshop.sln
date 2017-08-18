@@ -5,6 +5,12 @@ VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedisEshop", "RedisEshop\RedisEshop.csproj", "{FC3B3678-2BF0-42EC-BFC0-041F72FF524F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ASP.NET Core", "ASP.NET Core", "{05D28645-E991-49B4-B168-2FAE3F3CF6DB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ASP.NET MVC", "ASP.NET MVC", "{249D8824-6213-4652-92DC-3909F6927D42}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisEshopOC", "RedisEshopOC\RedisEshopOC.csproj", "{6CDA803F-B5B4-4C17-AC1A-58C4793DD14D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +21,17 @@ Global
 		{FC3B3678-2BF0-42EC-BFC0-041F72FF524F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC3B3678-2BF0-42EC-BFC0-041F72FF524F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC3B3678-2BF0-42EC-BFC0-041F72FF524F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CDA803F-B5B4-4C17-AC1A-58C4793DD14D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CDA803F-B5B4-4C17-AC1A-58C4793DD14D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CDA803F-B5B4-4C17-AC1A-58C4793DD14D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CDA803F-B5B4-4C17-AC1A-58C4793DD14D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FC3B3678-2BF0-42EC-BFC0-041F72FF524F} = {05D28645-E991-49B4-B168-2FAE3F3CF6DB}
+		{6CDA803F-B5B4-4C17-AC1A-58C4793DD14D} = {249D8824-6213-4652-92DC-3909F6927D42}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {85F750B6-2DD1-46F7-80CC-59107674CECB}

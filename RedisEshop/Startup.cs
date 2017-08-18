@@ -25,8 +25,7 @@ namespace RedisEshop
         {
 			// SERVICES
 	        services.AddScoped<CommonListService, CommonListService>();
-	        services.AddScoped<RedisCleanup, RedisCleanup>();
-	        //services.AddScoped<IEshopDataService, EshopDataService>();
+	        services.AddScoped<RedisBackgroundServices, RedisBackgroundServices>();
 	        services.AddScoped<IEshopDataService, EshopRedisDataService>();
 	        services.AddScoped<RedisService, RedisService>();
 
@@ -38,6 +37,7 @@ namespace RedisEshop
 	        opt.AbortOnConnectFail = false;
 	        opt.ConnectRetry = 3;
 	        opt.ConnectTimeout = 3000;
+	        opt.AllowAdmin = true; // na vlastni riziko
 	        services.AddSingleton(x => ConnectionMultiplexer.Connect(opt));
 
 			services.AddDistributedRedisCache(options =>

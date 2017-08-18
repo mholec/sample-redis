@@ -80,20 +80,11 @@ namespace RedisEshop.DataServices.NoRedis
 			return dataQuery.ToViewModel();
 		}
 
-		public List<ProductViewModel> GetTopRatedProducts(int count)
+		public List<ProductViewModel> Bestsellers(int count)
 		{
 			IQueryable<Product> dataQuery = _db.Products
 				.Include(x => x.ProductTags).ThenInclude(x => x.Tag)
 				.OrderByDescending(x => x.Likes).Take(count);
-
-			return dataQuery.ToViewModel();
-		}
-
-		public List<ProductViewModel> GetMostViewedProducts(int count)
-		{
-			IQueryable<Product> dataQuery = _db.Products
-				.Include(x => x.ProductTags).ThenInclude(x => x.Tag)
-				.OrderByDescending(x => x.Added).Take(count);
 
 			return dataQuery.ToViewModel();
 		}

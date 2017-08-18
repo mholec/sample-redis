@@ -8,8 +8,7 @@ namespace RedisEshop.DataServices
 	    List<ProductViewModel> GetLatestProducts(int count);
 	    List<ProductViewModel> GetProductsByTags(int[] tagIds);
 	    List<ProductViewModel> GetRandomProducts(int count);
-	    List<ProductViewModel> GetTopRatedProducts(int count);
-	    List<ProductViewModel> GetMostViewedProducts(int count);
+	    List<ProductViewModel> Bestsellers(int count);
 	    int AddAndGetProductVisits(int productId);
 
     }

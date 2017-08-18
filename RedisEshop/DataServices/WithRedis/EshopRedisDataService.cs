@@ -23,14 +23,9 @@ namespace RedisEshop.DataServices.WithRedis
 
 		public List<ProductViewModel> GetLatestProducts(int count)
 		{
-			int[] latest = _redisService.LatestProducts(count);
+			List<Product> latest = _redisService.LatestProducts(count);
 
-			IQueryable<Product> dataQuery = _db.Products
-				.Include(x => x.ProductTags).ThenInclude(x => x.Tag)
-				.Where(x => latest.Contains(x.ProductId));
-
-			return dataQuery.ToViewModel()
-				.OrderByDescending(x => x.Added).ToList();
+			return latest.AsQueryable().ToViewModel().OrderByDescending(x => x.Added).ToList();
 		}
 
 		public List<ProductViewModel> GetProductsByTags(int[] tagIds)
@@ -58,29 +53,15 @@ namespace RedisEshop.DataServices.WithRedis
 			return dataQuery.ToViewModel();
 		}
 
-		public List<ProductViewModel> GetTopRatedProducts(int count)
+		public List<ProductViewModel> Bestsellers(int count)
 		{
-			Dictionary<int, double> topRated = _redisService.TopRatedProducts(count);
+			Dictionary<Product, double> topRated = _redisService.Bestsellers(count);
+			Dictionary<int, double> scoresheet = topRated.ToDictionary(x => x.Key.ProductId, x => x.Value);
 
-			IQueryable<Product> dataQuery = _db.Products
-				.Include(x => x.ProductTags).ThenInclude(x => x.Tag)
-				.Where(x => topRated.Select(t => t.Key).Contains(x.ProductId));
-
-			List<ProductViewModel> data = dataQuery.ToViewModel();
-			data.ForEach(x => x.Likes = (int)topRated[x.ProductId]);
+			List<ProductViewModel> data = topRated.Select(x => x.Key).AsQueryable().ToViewModel();
+			data.ForEach(x => x.PurchasesCount = (int)scoresheet[x.ProductId]);
 
 			return data;
-		}
-
-		public List<ProductViewModel> GetMostViewedProducts(int count)
-		{
-			int[] mostViewed = _redisService.RandomProducts(count);
-
-			IQueryable<Product> dataQuery = _db.Products
-				.Include(x => x.ProductTags).ThenInclude(x => x.Tag)
-				.Where(x => mostViewed.Contains(x.ProductId));
-
-			return dataQuery.ToViewModel();
 		}
 
 		public int AddAndGetProductVisits(int productId)

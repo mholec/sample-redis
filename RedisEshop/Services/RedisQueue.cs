@@ -5,19 +5,19 @@ namespace RedisEshop.Services
     public class RedisQueue
     {
 	    private const string RedisQueueKey = "redisqueues";
-	    private readonly ConnectionMultiplexer _connectionMultiplexer;
+	    private readonly ConnectionMultiplexer _redis;
 
-	    public RedisQueue(ConnectionMultiplexer connectionMultiplexer)
+	    public RedisQueue(ConnectionMultiplexer redis)
 	    {
-		    _connectionMultiplexer = connectionMultiplexer;
+		    _redis = redis;
 	    }
 
 	    public object Pop(string queueName)
 	    {
 		    queueName = RedisQueueKey + ":" + queueName;
 
-		    RedisValue item = _connectionMultiplexer.GetDatabase().ListLeftPop(queueName + ":primary");
-		    _connectionMultiplexer.GetDatabase().ListRightPush(queueName + ":secondary", item);
+		    RedisValue item = _redis.GetDatabase().ListLeftPop(queueName + ":primary");
+		    _redis.GetDatabase().ListRightPush(queueName + ":secondary", item);
 
 		    return item;
 	    }
@@ -26,7 +26,7 @@ namespace RedisEshop.Services
 	    {
 		   queueName = RedisQueueKey + ":" + queueName;
 
-		    _connectionMultiplexer.GetDatabase().KeyDelete(queueName + ":secondary");
+		    _redis.GetDatabase().KeyDelete(queueName + ":secondary");
 	    }
 
 	    private void Move(string queueName)

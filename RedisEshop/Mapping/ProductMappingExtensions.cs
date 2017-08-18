@@ -16,10 +16,10 @@ namespace RedisEshop.Mapping
 				Identifier = x.Identifier,
 				ProductId = x.ProductId,
 				Title = x.Title,
-				Likes = x.Likes,
+				PurchasesCount = x.Likes,
 				Views = x.Views,
 				Added = x.Added,
-				Tags = x.ProductTags != null ? x.ProductTags.Select(pt => pt.Tag.Title).ToList() : new List<string>()
+				Tags = x.ProductTags != null ? x.ProductTags.Where(t => t.Tag != null).Select(pt => pt.Tag.Title).ToList() : new List<string>()
 			}).ToList();
 		}
 	}

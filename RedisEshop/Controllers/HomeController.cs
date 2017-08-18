@@ -9,7 +9,7 @@ namespace RedisEshop.Controllers
 {
 	public class HomeController : Controller
 	{
-		private IDistributedCache _distributedCache;
+		private readonly IDistributedCache _distributedCache;
 
 		public HomeController(IDistributedCache distributedCache)
 		{

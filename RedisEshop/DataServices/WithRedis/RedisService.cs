@@ -4,6 +4,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using RedisEshop.Entities;
 using StackExchange.Redis;
+using Order = StackExchange.Redis.Order;
 
 namespace RedisEshop.DataServices.WithRedis
 {
@@ -12,29 +13,38 @@ namespace RedisEshop.DataServices.WithRedis
 	/// </summary>
 	public class RedisService
 	{
-		private readonly ConnectionMultiplexer _connectionMultiplexer;
+		private readonly ConnectionMultiplexer _redis;
 
-		public RedisService(ConnectionMultiplexer connectionMultiplexer)
+		public RedisService(ConnectionMultiplexer redis)
 		{
-			this._connectionMultiplexer = connectionMultiplexer;
+			this._redis = redis;
 		}
 
-		public int[] LatestProducts(int count)
+		public List<Product> LatestProducts(int count)
 		{
-			string keyName = "products:dates";
+			string keyName = "products:latest";
 
-			RedisValue[] data = _connectionMultiplexer
+			string[] data = _redis.GetDatabase().ListRange(keyName, 0, 10).Select(x => (string)x).ToArray();
+
+			return data.Select(JsonConvert.DeserializeObject<Product>).ToList();
+		}
+
+		public int[] LatestProductIds(int count)
+		{
+			string keyName = "products:latest-ids";
+
+			RedisValue[] data = _redis
 				.GetDatabase()
-				.SortedSetRangeByRank(keyName, 0, count, Order.Descending);
+				.ListRange(keyName, 0, 10);
 
-			return data.Select(x=> (int)x).ToArray();
+			return data.Select(x => (int) x).ToArray();
 		}
 
 		public int[] RandomProducts(int count)
 		{
 			string keyName = "products:all";
 
-			RedisValue[] data = _connectionMultiplexer
+			RedisValue[] data = _redis
 				.GetDatabase()
 				.SetRandomMembers(keyName, count);
 
@@ -44,16 +54,16 @@ namespace RedisEshop.DataServices.WithRedis
 		public int[] ProductsByTags(params int[] tags)
 		{
 			// seznam všech typů tagů (families)
-			int[] families = _connectionMultiplexer.GetDatabase().SetMembers("tagFamilies").Select(x => (int)x).ToArray();
+			int[] families = _redis.GetDatabase().SetMembers("tagFamilies").Select(x => (int)x).ToArray();
 
 			// náhodný dočasný klíč a uložení do redis
 			string allTagsTempKey = Guid.NewGuid().ToString();
-			_connectionMultiplexer.GetDatabase().SetAdd(allTagsTempKey, tags.Select(x => (RedisValue)x).ToArray());
+			_redis.GetDatabase().SetAdd(allTagsTempKey, tags.Select(x => (RedisValue)x).ToArray());
 
 			List<string> familyKeys = new List<string>();
 			foreach (int family in families)
 			{
-				string[] familyTagKeys = _connectionMultiplexer.GetDatabase()
+				string[] familyTagKeys = _redis.GetDatabase()
 					.SetCombine(SetOperation.Intersect, "tagFamilies:" + family, allTagsTempKey) // najdu průnik tagů v dané family
 					.Select(x => "tag:" + x  + ":products").ToArray(); // z těchto tagů si vytvořím klíče pro další práci
 
@@ -64,37 +74,35 @@ namespace RedisEshop.DataServices.WithRedis
 				if (familyTagKeys.Any())
 				{
 					familyKeys.Add(randomKeyFamily);
-					_connectionMultiplexer.GetDatabase().SetCombineAndStore(SetOperation.Union, randomKeyFamily, familyTagKeys.Select(x => (RedisKey) x).ToArray());
+					_redis.GetDatabase().SetCombineAndStore(SetOperation.Union, randomKeyFamily, familyTagKeys.Select(x => (RedisKey) x).ToArray());
 				}
 			}
 
 			// průnik mezi families
-			int[] articleIds = _connectionMultiplexer.GetDatabase()
+			int[] articleIds = _redis.GetDatabase()
 				.SetCombine(SetOperation.Intersect, familyKeys.Select(x => (RedisKey)x).ToArray())
 				.Select(x => (int) x).ToArray();
 
 			// úklid v redis
-			_connectionMultiplexer.GetDatabase().KeyDelete(allTagsTempKey);
-			_connectionMultiplexer.GetDatabase().KeyDelete(familyKeys.Select(x => (RedisKey) x).ToArray());
+			_redis.GetDatabase().KeyDelete(allTagsTempKey);
+			_redis.GetDatabase().KeyDelete(familyKeys.Select(x => (RedisKey) x).ToArray());
 
 			return articleIds;
 		}
 
-		public Dictionary<int, double> TopRatedProducts(int count)
+		public Dictionary<Product, double> Bestsellers(int count)
 		{
-			string keyName = "products:likes";
+			string keyName = "products:bestsellers";
 
-			SortedSetEntry[] data = _connectionMultiplexer
-				.GetDatabase()
-				.SortedSetRangeByRankWithScores(keyName, 0, count, Order.Descending);
+			SortedSetEntry[] data = _redis.GetDatabase().SortedSetRangeByRankWithScores(keyName, 0, count, Order.Descending);
 
-			return data.ToDictionary(x => (int) x.Element, x => x.Score);
+			return data.ToDictionary(x => JsonConvert.DeserializeObject<Product>(x.Element) , x => x.Score);
 		}
 		public int[] MostViewedProducts(int count)
 		{
 			string keyName = "products:visits";
 
-			RedisValue[] data = _connectionMultiplexer
+			RedisValue[] data = _redis
 				.GetDatabase()
 				.SortedSetRangeByRank(keyName, 0, count, Order.Descending);
 
@@ -113,7 +121,7 @@ namespace RedisEshop.DataServices.WithRedis
 
 			string keyName = "products:visits";
 
-			var score = _connectionMultiplexer
+			var score = _redis
 				.GetDatabase()
 				.SortedSetIncrement(keyName, productId, 1);
 
@@ -126,7 +134,7 @@ namespace RedisEshop.DataServices.WithRedis
 
 			var serialized = JsonConvert.SerializeObject(product);
 
-			_connectionMultiplexer
+			_redis
 				.GetDatabase()
 				.StringSet(keyName, serialized);
 		}
@@ -135,7 +143,7 @@ namespace RedisEshop.DataServices.WithRedis
 		{
 			string keyName = $"product:{productId}:object";
 
-			string serialized = _connectionMultiplexer
+			string serialized = _redis
 				.GetDatabase()
 				.StringGet(keyName);
 

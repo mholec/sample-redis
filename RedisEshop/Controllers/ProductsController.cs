@@ -22,8 +22,7 @@ namespace RedisEshop.Controllers
 			var pageModel = new ProductHomePageModel()
 			{
 				LatestProducts = _eshopDataService.GetLatestProducts(10),
-				MostViewedProducts = _eshopDataService.GetMostViewedProducts(5),
-				TopRatedProducts = _eshopDataService.GetTopRatedProducts(5)
+				Bestsellers = _eshopDataService.Bestsellers(5)
 			};
 
 			return View(pageModel);

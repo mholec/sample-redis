@@ -5,9 +5,9 @@ namespace RedisEshop.Controllers
 {
 	public class SystemController : Controller
 	{
-		private readonly RedisCleanup _redisCleanup;
+		private readonly RedisBackgroundServices _redisCleanup;
 
-		public SystemController(RedisCleanup redisCleanup)
+		public SystemController(RedisBackgroundServices redisCleanup)
 		{
 			_redisCleanup = redisCleanup;
 		}
@@ -15,7 +15,7 @@ namespace RedisEshop.Controllers
 		[Route("system/redis-cleanup")]
 		public IActionResult Cleanup()
 		{
-			_redisCleanup.PrepareData();
+			_redisCleanup.RestoreRedis();
 
 			return Content("OK");
 		}

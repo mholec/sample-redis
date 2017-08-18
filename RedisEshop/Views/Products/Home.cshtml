@@ -3,19 +3,25 @@
 <div class="row">
 	<div class="col-md-9">
 		<h1>Nové produkty</h1>
-		<ul>
+		<p>Posledních 10 produktů dle data vložení do eshopu</p>
+		<div class="row grid">
 			@foreach (var item in Model.LatestProducts)
 			{
-				<li>@item.Title</li>
+				<div class="col-md-4">
+					<div class="item">
+						<a asp-controller="Products" asp-action="Detail" asp-data-identifier="@item.Identifier">@item.Title</a>
+					</div>
+				</div>
 			}
-		</ul>
+		</div>
 	</div>
 	<div class="col-md-3">
 		<h2>Bestsellery</h2>
+		<p>TOP 10 produktů dle počtu objednání</p>
 		<ul>
-			@foreach (var item in Model.TopRatedProducts)
+			@foreach (var item in Model.Bestsellers)
 			{
-				<li>@item.Title</li>
+				<li>@item.Title (@item.PurchasesCount)</li>
 			}
 		</ul>
 

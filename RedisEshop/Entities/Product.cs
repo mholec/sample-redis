@@ -15,5 +15,6 @@ namespace RedisEshop.Entities
 		public int Views { get; set; }
 
 		public ICollection<ProductTag> ProductTags { get; set; }
+		public ICollection<OrderItem> OrderedItems { get; set; }
     }
 }

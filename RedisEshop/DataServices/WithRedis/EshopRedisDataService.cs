@@ -123,5 +123,15 @@ namespace RedisEshop.DataServices.WithRedis
 				yield return mail.To;
 			}
 		}
+
+		public List<PostalCode> GetMunicipalities(string postalCode)
+		{
+			if (string.IsNullOrEmpty(postalCode) || postalCode.Length != 5)
+			{
+				return new List<PostalCode>();
+			}
+
+			return _redisService.GetPostalCodes(int.Parse(postalCode));
+		}
 	}
 }

@@ -11,9 +11,10 @@ using System;
 namespace RedisEshop.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170820153704_PostalCodes")]
+    partial class PostalCodes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,7 +71,7 @@ namespace RedisEshop.Migrations
 
                     b.Property<string>("Name");
 
-                    b.HasKey("Code", "Name");
+                    b.HasKey("Code");
 
                     b.ToTable("PostalCodes");
                 });

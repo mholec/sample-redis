@@ -108,5 +108,10 @@ namespace RedisEshop.DataServices.NoRedis
 		{
 			throw new NotImplementedException();
 		}
+
+		public List<PostalCode> GetMunicipalities(string postalCode)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

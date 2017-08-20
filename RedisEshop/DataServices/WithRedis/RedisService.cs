@@ -186,5 +186,17 @@ namespace RedisEshop.DataServices.WithRedis
 
 			return email;
 		}
+
+		public List<PostalCode> GetPostalCodes(int code)
+		{
+			var data = _redis.GetDatabase()
+				.SortedSetRangeByScoreWithScores("postalcodes", code, code, Exclude.None);
+
+			return data.Select(x => new PostalCode()
+			{
+				Code = (int) x.Score,
+				Name = x.Element
+			}).ToList();
+		}
 	}
 }

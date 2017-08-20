@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using RedisEshop.DataServices;
@@ -46,6 +47,9 @@ namespace RedisEshop.Maintenance
 
 			// úvodní nastavení mapování mezi productId a identifier
 			InitIdentifierMaps(_db.Products.ToList());
+
+			// import PSČ
+			InitPostalCodes();
 		}
 
 		public void AddNewProduct(Product product)
@@ -114,10 +118,10 @@ namespace RedisEshop.Maintenance
 		private void InitBestsellers()
 		{
 			SortedSetEntry[] data = _db.Products
-				 // select from database
+				// select from database
 				.Select(x => new { Product = x, Orders = x.OrderedItems.Sum(y => y.Count) })
 
-				 // project to sortedset
+				// project to sortedset
 				.Select(x => new SortedSetEntry(JsonConvert.SerializeObject(x.Product, new JsonSerializerSettings()
 				{
 					ReferenceLoopHandling = ReferenceLoopHandling.Ignore
@@ -137,6 +141,13 @@ namespace RedisEshop.Maintenance
 			}
 
 			batch.Execute();
+		}
+
+		private void InitPostalCodes()
+		{
+			SortedSetEntry[] data = _db.PostalCodes.ToList().Select(x => new SortedSetEntry((RedisValue)x.Name, Convert.ToDouble(x.Code))).ToArray();
+
+			_redis.GetDatabase().SortedSetAdd("postalcodes", data);
 		}
 	}
 }

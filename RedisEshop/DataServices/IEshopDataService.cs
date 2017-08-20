@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using RedisEshop.Entities;
 using RedisEshop.ViewModels;
 
 namespace RedisEshop.DataServices
@@ -14,5 +15,6 @@ namespace RedisEshop.DataServices
 		ProductViewModel GetProduct(string identifier);
 		(string, string) NewsletterSubscribe(string email);
 		IEnumerable<string> SendNewsletters();
+		List<PostalCode> GetMunicipalities(string postalCode);
 	}
 }

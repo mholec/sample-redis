@@ -10,6 +10,8 @@ namespace RedisEshop.DataServices
 	    List<ProductViewModel> GetRandomProducts(int count);
 	    List<ProductViewModel> Bestsellers(int count);
 	    int AddAndGetProductVisits(int productId);
+	    ProductViewModel GetProduct(string identifier);
+		(string, string) NewsletterSubscribe(string email);
 
     }
 }

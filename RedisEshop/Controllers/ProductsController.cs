@@ -45,7 +45,9 @@ namespace RedisEshop.Controllers
 		[Route("product/{identifier}")]
 		public IActionResult Detail(string identifier)
 		{
-			return View();
+			var result = _eshopDataService.GetProduct(identifier);
+
+			return View(result);
 		}
 
 		public int AddVisit(int productId)

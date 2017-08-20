@@ -1,4 +1,5 @@
-﻿@model ProductHomePageModel
+﻿@using FormMethod = Microsoft.AspNetCore.Mvc.Rendering.FormMethod
+@model ProductHomePageModel
 
 <div class="row">
 	<div class="col-md-9">
@@ -9,7 +10,8 @@
 			{
 				<div class="col-md-4">
 					<div class="item">
-						<a asp-controller="Products" asp-action="Detail" asp-data-identifier="@item.Identifier">@item.Title</a>
+						<a asp-controller="Products" asp-action="Detail" asp-route-identifier="@item.Identifier">@item.Title</a>
+						<p>@item.Price.ToString("C2")</p>
 					</div>
 				</div>
 			}
@@ -21,11 +23,20 @@
 		<ul>
 			@foreach (var item in Model.Bestsellers)
 			{
-				<li>@item.Title (@item.PurchasesCount)</li>
+				<li>
+					<a asp-controller="Products" asp-action="Detail" asp-route-identifier="@item.Identifier">
+						@item.Title (@item.PurchasesCount)
+					</a>
+				</li>
 			}
 		</ul>
 
 		<h2>Newsletter</h2>
-		<div></div>
+		<div class="newsletter">
+			<form asp-controller="Newsletter" asp-action="Subscribe" method="post">
+				<input type="text" name="email" id="email" class="form-control" />
+				<input type="submit" value="Přihlásit" class="btn btn-success" />
+			</form>
+		</div>
 	</div>
 </div>

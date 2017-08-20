@@ -43,6 +43,9 @@ namespace RedisEshop.Maintenance
 			// úvodní nastavení počtů objednávek
 			_redis.GetDatabase().KeyDelete("products:bestsellers");
 			InitBestsellers();
+
+			// úvodní nastavení mapování mezi productId a identifier
+			InitIdentifierMaps(_db.Products.ToList());
 		}
 
 		public void AddNewProduct(Product product)
@@ -121,6 +124,19 @@ namespace RedisEshop.Maintenance
 				}), (double)x.Orders)).ToArray();
 
 			_redis.GetDatabase().SortedSetAdd("products:bestsellers", data);
+		}
+
+		private void InitIdentifierMaps(List<Product> products)
+		{
+			var batch = _redis.GetDatabase().CreateBatch();
+
+			foreach (var product in products)
+			{
+				batch.StringSetAsync("mapping:product:identifier-to-id:" + product.Identifier, product.ProductId);
+				batch.StringSetAsync("mapping:product:id-to-identifier:" + product.ProductId, product.Identifier);
+			}
+
+			batch.Execute();
 		}
 	}
 }

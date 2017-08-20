@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using RedisEshop.Entities;
@@ -8,7 +8,7 @@ using RedisEshop.ViewModels;
 namespace RedisEshop.DataServices.WithRedis
 {
 	/// <summary>
-	/// Slu�ba napojen� na SQL datab�zi s vyu�it�m Redis
+	/// Služba napojená na SQL databázi s využitím Redis
 	/// </summary>
 	public class EshopRedisDataService : IEshopDataService
 	{
@@ -67,6 +67,29 @@ namespace RedisEshop.DataServices.WithRedis
 		public int AddAndGetProductVisits(int productId)
 		{
 			return _redisService.AddProductVisit(productId);
+		}
+
+		public ProductViewModel GetProduct(string identifier)
+		{
+			int? id = _redisService.GetProductIdByIdenfitier(identifier);
+
+			var products = id != null
+				? _db.Products.Where(x => x.ProductId == id)			// just example, should be Find()
+				: _db.Products.Where(x => x.Identifier == identifier);	// just example, should be FirstOrDefault()
+
+			return products.ToViewModel().FirstOrDefault();
+		}
+
+		public (string, string) NewsletterSubscribe(string email)
+		{
+			var added = _redisService.TryAddNewsletterSubscriber(email);
+
+			if (!added)
+			{
+				return ("warning", "Email byl již v minulosti přihlášen");
+			}
+
+			return ("success", "Email byl uložen k odběru noviek");
 		}
 	}
 }

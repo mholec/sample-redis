@@ -151,5 +151,23 @@ namespace RedisEshop.DataServices.WithRedis
 
 			return product;
 		}
+
+		public int? GetProductIdByIdenfitier(string identifier)
+		{
+			string keyName = "mapping:product:identifier-to-id:" + identifier;
+
+			RedisValue result = _redis.GetDatabase().StringGet(keyName);
+
+			return (result.IsInteger) ? (int) result : default(int?);
+		}
+
+		public bool TryAddNewsletterSubscriber(string email)
+		{
+			string keyName = "newsletter:subscribers";
+
+			bool result = _redis.GetDatabase().SetAdd(keyName, email);
+
+			return result;
+		}
 	}
 }

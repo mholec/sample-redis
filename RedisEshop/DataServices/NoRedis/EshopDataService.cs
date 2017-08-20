@@ -103,5 +103,15 @@ namespace RedisEshop.DataServices.NoRedis
 
 			return 0;
 		}
+
+		public ProductViewModel GetProduct(string identifier)
+		{
+			throw new NotImplementedException();
+		}
+
+		public (string, string) NewsletterSubscribe(string email)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

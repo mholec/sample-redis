@@ -30,6 +30,7 @@ namespace RedisEshop
 	        services.AddScoped<RedisBackgroundServices, RedisBackgroundServices>();
 	        services.AddScoped<IEshopDataService, EshopRedisDataService>();
 	        services.AddScoped<RedisService, RedisService>();
+	        services.AddScoped(typeof(IDistributedCacheSerializer<>), typeof(ProtobufDistributedCacheSerializer<>));
 
 	        services.AddResponseCaching();
 

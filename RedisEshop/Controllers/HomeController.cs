@@ -13,10 +13,10 @@ namespace RedisEshop.Controllers
 		private readonly IDistributedCache _distributedCache;
 		private readonly IDistributedCacheSerializer<StatusViewModel> _serializer;
 
-		public HomeController(IDistributedCache distributedCache)
+		public HomeController(IDistributedCache distributedCache, IDistributedCacheSerializer<StatusViewModel> serializer)
 		{
 			this._distributedCache = distributedCache;
-			this._serializer = new ProtobufDistributedCacheSerializer<StatusViewModel>();
+			_serializer = serializer;
 		}
 
 		[Route("")]

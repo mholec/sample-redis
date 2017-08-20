@@ -5,6 +5,10 @@
 		<h1>@Model.Title</h1>
 		<p>@Model.Description</p>
 		<p>Cena: @Model.Price.ToString("C2")</p>
+		
+		<form asp-controller="Orders" asp-action="AddToBasket" asp-route-id="@Model.Identifier" method="get">
+			<input type="submit" value="Přidat do košíku" class="btn btn-success"/>
+		</form>
 	</div>
 </div>
 

@@ -34,18 +34,24 @@
 					</p>
 				}
 
-
+				<br />
+				<div class="text-right">
+					<input type="submit" value="Filtrovat" class="btn btn-success" />
+				</div>
 			</div>
-
-			<input type="submit" value="Filtrovat" />
 		</form>
 
 		<h1>Přehled produktů</h1>
-		<ul>
+		<div class="row grid">
 			@foreach (var item in Model.Products)
 			{
-				<li>@item.Title</li>
+				<div class="col-md-4">
+					<div class="item">
+						<a asp-controller="Products" asp-action="Detail" asp-route-identifier="@item.Identifier">@item.Title</a>
+						<p>@item.Price.ToString("C2")</p>
+					</div>
+				</div>
 			}
-		</ul>
+		</div>
 	</div>
 </div>

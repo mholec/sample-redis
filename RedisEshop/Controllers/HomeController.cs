@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using RedisEshop.Serialization;
 using RedisEshop.ViewModels;
 
 namespace RedisEshop.Controllers
@@ -10,10 +11,12 @@ namespace RedisEshop.Controllers
 	public class HomeController : Controller
 	{
 		private readonly IDistributedCache _distributedCache;
+		private readonly IDistributedCacheSerializer<StatusViewModel> _serializer;
 
 		public HomeController(IDistributedCache distributedCache)
 		{
 			this._distributedCache = distributedCache;
+			this._serializer = new ProtobufDistributedCacheSerializer<StatusViewModel>();
 		}
 
 		[Route("")]
@@ -27,10 +30,10 @@ namespace RedisEshop.Controllers
 		public IActionResult DistributedCache()
 		{
 			// from cache
-			var item = _distributedCache.Get("status");
+			byte[] item = _distributedCache.Get("status");
 			if (item != null)
 			{
-				return View(JsonConvert.DeserializeObject<StatusViewModel>(Encoding.UTF8.GetString(item)));
+				return View(_serializer.Deserialize(item));
 			}
 
 			// to cache
@@ -40,7 +43,7 @@ namespace RedisEshop.Controllers
 				Created = DateTime.Now
 			};
 
-			byte[] bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(status));
+			byte[] bytes = _serializer.Serialize(status);
 			_distributedCache.Set("status", bytes, new DistributedCacheEntryOptions
 			{
 				AbsoluteExpiration = DateTimeOffset.Now.AddSeconds(15)

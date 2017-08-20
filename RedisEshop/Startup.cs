@@ -8,6 +8,8 @@ using RedisEshop.DataServices;
 using RedisEshop.DataServices.WithRedis;
 using RedisEshop.Entities;
 using RedisEshop.Maintenance;
+using RedisEshop.Serialization;
+using RedisEshop.ViewModels;
 using StackExchange.Redis;
 
 namespace RedisEshop

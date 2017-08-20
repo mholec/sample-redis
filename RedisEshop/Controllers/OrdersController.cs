@@ -13,12 +13,16 @@ namespace RedisEshop.Controllers
 		}
 
 		[Route("orders/municipalities/{postalCode}")]
-
 		public IActionResult GetMunicipalities(string postalCode)
 		{
 			var result = _eshopDataService.GetMunicipalities(postalCode);
 
 			return Ok(result);
+		}
+
+		public IActionResult AddToBasket(string identifier)
+		{
+			return RedirectToAction("Detail", "Products", new { identifier });
 		}
 	}
 }

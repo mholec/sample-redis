@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using RedisEshop.Entities;
+using RedisEshop.ViewModels;
 using StackExchange.Redis;
 using Order = StackExchange.Redis.Order;
 
@@ -168,6 +169,31 @@ namespace RedisEshop.DataServices.WithRedis
 			bool result = _redis.GetDatabase().SetAdd(keyName, email);
 
 			return result;
+		}
+
+		public void QueueNewsletterWelcomeMail(EmailMessageViewModel email)
+		{
+			string keyName = "emails:newsletter-welcome";
+
+			string value = JsonConvert.SerializeObject(email);
+
+			_redis.GetDatabase().ListLeftPush(keyName, value);
+		}
+
+		public EmailMessageViewModel DequeueNewsletterWelcomeMail()
+		{
+			string keyName = "emails:newsletter-welcome";
+
+			var value = _redis.GetDatabase().ListRightPop(keyName);
+
+			if (value.IsNullOrEmpty)
+			{
+				return null;
+			}
+
+			EmailMessageViewModel email = JsonConvert.DeserializeObject<EmailMessageViewModel>(value);
+
+			return email;
 		}
 	}
 }

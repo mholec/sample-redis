@@ -89,7 +89,16 @@ namespace RedisEshop.DataServices.WithRedis
 				return ("warning", "Email byl již v minulosti přihlášen");
 			}
 
-			return ("success", "Email byl uložen k odběru noviek");
+			EmailMessageViewModel model = new EmailMessageViewModel
+			{
+				To = email,
+				Subject = "Úspěšná registrace k odběru novinek",
+				Message = "Děkujeme za přihlášení k odběru novinek na naší webové stránce ...."
+			};
+
+			_redisService.QueueNewsletterWelcomeMail(model);
+
+			return ("success", "Email byl uložen k odběru novinek");
 		}
 	}
 }

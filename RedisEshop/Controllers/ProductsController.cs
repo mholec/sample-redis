@@ -16,19 +16,20 @@ namespace RedisEshop.Controllers
 			_eshopDataService = eshopDataService;
 		}
 
-		[Route("home")]
+		[Route("products/home")]
 		public IActionResult Home()
 		{
 			var pageModel = new ProductHomePageModel()
 			{
 				LatestProducts = _eshopDataService.GetLatestProducts(10),
-				Bestsellers = _eshopDataService.Bestsellers(5)
+				Bestsellers = _eshopDataService.Bestsellers(5),
+				MostViewed = _eshopDataService.GetMostViewedProducts(5)
 			};
 
 			return View(pageModel);
 		}
 
-		[Route("products")]
+		[Route("products/index")]
 		public IActionResult Index(List<Item> tag = null)
 		{
 			int[] items = tag?.Where(x => x.Selected != null).Select(x => x.Id).ToArray() ?? new int[0];
@@ -42,7 +43,7 @@ namespace RedisEshop.Controllers
 			return View(pageModel);
 		}
 
-		[Route("product/{identifier}")]
+		[Route("products/detail/{identifier}")]
 		public IActionResult Detail(string identifier)
 		{
 			var result = _eshopDataService.GetProduct(identifier);
@@ -50,7 +51,8 @@ namespace RedisEshop.Controllers
 			return View(result);
 		}
 
-		public int AddVisit(int productId)
+		[Route("products/visit/{productId}")]
+		public int Visit(int productId)
 		{
 			return _eshopDataService.AddAndGetProductVisits(productId);
 		}

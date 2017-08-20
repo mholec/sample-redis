@@ -100,5 +100,28 @@ namespace RedisEshop.DataServices.WithRedis
 
 			return ("success", "Email byl uložen k odběru novinek");
 		}
+
+		public List<ProductViewModel> GetMostViewedProducts(int count)
+		{
+			Dictionary<int, double> mostViewed = _redisService.MostViewedProducts(count);
+
+			List<ProductViewModel> result = _db.Products.Include(x => x.ProductTags).ThenInclude(x => x.Tag)
+				.Where(x => mostViewed.Select(y => y.Key).Contains(x.ProductId)).ToViewModel();
+
+			result.ForEach(x => x.Views = (int) mostViewed[x.ProductId]);
+
+			return result.OrderByDescending(x => x.Views).ToList();
+		}
+
+		public IEnumerable<string> SendNewsletters()
+		{
+			EmailMessageViewModel mail;
+			while ((mail = _redisService.DequeueNewsletterWelcomeMail()) != null)
+			{
+				// emailService.Send(email);
+
+				yield return mail.To;
+			}
+		}
 	}
 }

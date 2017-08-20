@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using RedisEshop.DataServices;
 
@@ -22,6 +23,14 @@ namespace RedisEshop.Controllers
 			ViewBag.AlertType = result.alertType;
 
 			return View("Status");
+		}
+
+		[Route("newsletter/send")]
+		public IActionResult SendNewsletters()
+		{
+			IEnumerable<string> emails = _eshopDataService.SendNewsletters();
+
+			return Content(string.Join(", ", emails));
 		}
 	}
 }

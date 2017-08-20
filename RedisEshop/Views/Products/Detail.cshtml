@@ -7,3 +7,10 @@
 		<p>Cena: @Model.Price.ToString("C2")</p>
 	</div>
 </div>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		$.get("/products/visit/@Model.ProductId", function () {
+		});
+	});
+</script>

@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RedisEshop</title>
+	<script src="~/lib/jquery/dist/jquery.js"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
@@ -25,7 +26,7 @@
 					<li><a asp-controller="Home" asp-action="DistributedCache">Cachování</a></li>
 		            <li><a asp-controller="Products" asp-action="Home">Homepage</a></li>
 		            <li><a asp-controller="Products" asp-action="Index">Produkty</a></li>
-		            <li><a asp-controller="Products" asp-action="Detail">Detail</a></li>
+		            <li><a asp-controller="Products" asp-action="Detail" asp-route-identifier="hkp30">Detail</a></li>
 		            <li><a asp-controller="Orders" asp-action="Index">Objednávka</a></li>
 		            <li><a asp-controller="Logging" asp-action="Index">Logování</a></li>
 		            <li><a asp-controller="Redlock" asp-action="Index">Redlock</a></li>

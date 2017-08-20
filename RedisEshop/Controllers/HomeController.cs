@@ -17,12 +17,13 @@ namespace RedisEshop.Controllers
 		}
 
 		[Route("")]
+		[Route("home/quickstart")]
 		public IActionResult QuickStart()
 		{
 			return View();
 		}
 
-		[Route("distributed-cache")]
+		[Route("home/distributed-cache")]
 		public IActionResult DistributedCache()
 		{
 			// from cache

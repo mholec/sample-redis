@@ -6,5 +6,6 @@ namespace RedisEshop.ViewModels.Pages
     {
 		public List<ProductViewModel> LatestProducts { get; set; }
 		public List<ProductViewModel> Bestsellers { get; set; }
+		public List<ProductViewModel> MostViewed { get; set; }
     }
 }

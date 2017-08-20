@@ -38,7 +38,7 @@ namespace RedisEshop.DataServices.WithRedis
 				.GetDatabase()
 				.ListRange(keyName, 0, 10);
 
-			return data.Select(x => (int) x).ToArray();
+			return data.Select(x => (int)x).ToArray();
 		}
 
 		public int[] RandomProducts(int count)
@@ -49,7 +49,7 @@ namespace RedisEshop.DataServices.WithRedis
 				.GetDatabase()
 				.SetRandomMembers(keyName, count);
 
-			return data.Select(x=> (int)x).ToArray();
+			return data.Select(x => (int)x).ToArray();
 		}
 
 		public int[] ProductsByTags(params int[] tags)
@@ -66,7 +66,7 @@ namespace RedisEshop.DataServices.WithRedis
 			{
 				string[] familyTagKeys = _redis.GetDatabase()
 					.SetCombine(SetOperation.Intersect, "tagFamilies:" + family, allTagsTempKey) // najdu průnik tagů v dané family
-					.Select(x => "tag:" + x  + ":products").ToArray(); // z těchto tagů si vytvořím klíče pro další práci
+					.Select(x => "tag:" + x + ":products").ToArray(); // z těchto tagů si vytvořím klíče pro další práci
 
 				// dočasný klíč pro konkrétní family (pod klíčem bude seznam článků)
 				string randomKeyFamily = allTagsTempKey + ":" + family;
@@ -75,18 +75,18 @@ namespace RedisEshop.DataServices.WithRedis
 				if (familyTagKeys.Any())
 				{
 					familyKeys.Add(randomKeyFamily);
-					_redis.GetDatabase().SetCombineAndStore(SetOperation.Union, randomKeyFamily, familyTagKeys.Select(x => (RedisKey) x).ToArray());
+					_redis.GetDatabase().SetCombineAndStore(SetOperation.Union, randomKeyFamily, familyTagKeys.Select(x => (RedisKey)x).ToArray());
 				}
 			}
 
 			// průnik mezi families
 			int[] articleIds = _redis.GetDatabase()
 				.SetCombine(SetOperation.Intersect, familyKeys.Select(x => (RedisKey)x).ToArray())
-				.Select(x => (int) x).ToArray();
+				.Select(x => (int)x).ToArray();
 
 			// úklid v redis
 			_redis.GetDatabase().KeyDelete(allTagsTempKey);
-			_redis.GetDatabase().KeyDelete(familyKeys.Select(x => (RedisKey) x).ToArray());
+			_redis.GetDatabase().KeyDelete(familyKeys.Select(x => (RedisKey)x).ToArray());
 
 			return articleIds;
 		}
@@ -95,38 +95,29 @@ namespace RedisEshop.DataServices.WithRedis
 		{
 			string keyName = "products:bestsellers";
 
-			SortedSetEntry[] data = _redis.GetDatabase().SortedSetRangeByRankWithScores(keyName, 0, count, Order.Descending);
+			SortedSetEntry[] data = _redis.GetDatabase().SortedSetRangeByRankWithScores(keyName, 0, count - 1, Order.Descending);
 
-			return data.ToDictionary(x => JsonConvert.DeserializeObject<Product>(x.Element) , x => x.Score);
+			return data.ToDictionary(x => JsonConvert.DeserializeObject<Product>(x.Element), x => x.Score);
 		}
-		public int[] MostViewedProducts(int count)
+		public Dictionary<int, double> MostViewedProducts(int count)
 		{
 			string keyName = "products:visits";
 
-			RedisValue[] data = _redis
+			var data = _redis
 				.GetDatabase()
-				.SortedSetRangeByRank(keyName, 0, count, Order.Descending);
+				.SortedSetRangeByRankWithScores(keyName, 0, count - 1, Order.Descending);
 
-			return data.Select(x=> (int)x).ToArray();
+			return data.ToDictionary(x => (int)x.Element, x => x.Score);
 		}
 
 		public int AddProductVisit(int productId)
 		{
-			//string keyName = "products:" + productId + ":visits";
+			string keyName = "products:" + productId + ":visits";
 
-			//var score = _connectionMultiplexer
-			//	.GetDatabase()
-			//	.StringIncrement(keyName, 1);
+			var scoreFromString = _redis.GetDatabase().StringIncrement(keyName, 1);
+			_redis.GetDatabase().SortedSetIncrement("products:visits", productId, 1);
 
-			//return (int)score;
-
-			string keyName = "products:visits";
-
-			var score = _redis
-				.GetDatabase()
-				.SortedSetIncrement(keyName, productId, 1);
-
-			return (int)score;
+			return (int)scoreFromString;
 		}
 
 		public void CacheSetProduct(Product product)
@@ -159,7 +150,7 @@ namespace RedisEshop.DataServices.WithRedis
 
 			RedisValue result = _redis.GetDatabase().StringGet(keyName);
 
-			return (result.IsInteger) ? (int) result : default(int?);
+			return (result.IsInteger) ? (int)result : default(int?);
 		}
 
 		public bool TryAddNewsletterSubscriber(string email)

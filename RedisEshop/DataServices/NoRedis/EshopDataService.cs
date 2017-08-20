@@ -20,15 +20,6 @@ namespace RedisEshop.DataServices.NoRedis
 			this._db = db;
 		}
 
-		public List<ProductViewModel> GetLatestProducts(int count)
-		{
-			IQueryable<Product> dataQuery = _db.Products
-				.Include(x => x.ProductTags).ThenInclude(x => x.Tag)
-				.OrderByDescending(x => x.Added).Take(count);
-
-			return dataQuery.ToViewModel();
-		}
-
 		public List<ProductViewModel> GetProductsByTags(int[] tagIds)
 		{
 			IQueryable<Product> dataQuery = _db.Products
@@ -67,27 +58,6 @@ namespace RedisEshop.DataServices.NoRedis
 			return dataQuery.ToViewModel();
 		}
 
-		public List<ProductViewModel> GetRandomProducts(int count)
-		{
-			int total = _db.Products.Count();
-			int skip = new Random(Guid.NewGuid().GetHashCode()).Next(0, total - count);
-
-			IQueryable<Product> dataQuery = _db.Products
-				.Include(x => x.ProductTags).ThenInclude(x => x.Tag)
-				.Skip(skip)
-				.Take(count);
-
-			return dataQuery.ToViewModel();
-		}
-
-		public List<ProductViewModel> Bestsellers(int count)
-		{
-			IQueryable<Product> dataQuery = _db.Products
-				.Include(x => x.ProductTags).ThenInclude(x => x.Tag)
-				.OrderByDescending(x => x.Likes).Take(count);
-
-			return dataQuery.ToViewModel();
-		}
 
 		public int AddAndGetProductVisits(int productId)
 		{
@@ -110,6 +80,31 @@ namespace RedisEshop.DataServices.NoRedis
 		}
 
 		public (string, string) NewsletterSubscribe(string email)
+		{
+			throw new NotImplementedException();
+		}
+
+		public List<ProductViewModel> GetMostViewedProducts(int count)
+		{
+			throw new NotImplementedException();
+		}
+
+		public List<ProductViewModel> GetLatestProducts(int count)
+		{
+			throw new NotImplementedException();
+		}
+
+		public List<ProductViewModel> GetRandomProducts(int count)
+		{
+			throw new NotImplementedException();
+		}
+
+		public List<ProductViewModel> Bestsellers(int count)
+		{
+			throw new NotImplementedException();
+		}
+
+		public IEnumerable<string> SendNewsletters()
 		{
 			throw new NotImplementedException();
 		}

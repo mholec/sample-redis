@@ -1,5 +1,4 @@
-﻿@using FormMethod = Microsoft.AspNetCore.Mvc.Rendering.FormMethod
-@model ProductHomePageModel
+﻿@model ProductHomePageModel
 
 <div class="row">
 	<div class="col-md-9">
@@ -26,6 +25,19 @@
 				<li>
 					<a asp-controller="Products" asp-action="Detail" asp-route-identifier="@item.Identifier">
 						@item.Title (@item.PurchasesCount)
+					</a>
+				</li>
+			}
+		</ul>
+		
+		<h2>Nejnavštěvovanější</h2>
+		<p>TOP 10 produktů dle počtu zobrazení</p>
+		<ul>
+			@foreach (var item in Model.MostViewed)
+			{
+				<li>
+					<a asp-controller="Products" asp-action="Detail" asp-route-identifier="@item.Identifier">
+						@item.Title (@item.Views)
 					</a>
 				</li>
 			}

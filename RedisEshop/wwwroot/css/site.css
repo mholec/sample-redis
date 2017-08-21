@@ -90,3 +90,32 @@ nav a:hover { color: #ccc !important;}
 	display: inline-block;
 	margin-top: -3px;
 }
+
+a.rkl {
+	padding: 10px;
+	border-radius: 3px;
+	display: block;
+	position: relative;
+	margin-top: 30px;
+	border: #eee 1px solid;
+}
+
+a.rkl h3{
+	margin-top: 10px;
+	margin-bottom: 30px;
+}
+
+a.rkl span {
+	background: #f5f5f5;
+	position: absolute;
+	right: 0;
+	top: -20px;
+	padding: 5px;
+	font-weight: bold;
+}
+
+a.rkl img {
+	float: left;
+	padding-right: 20px;
+	width: 200px;
+}

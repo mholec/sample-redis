@@ -237,5 +237,15 @@ namespace RedisEshop.DataServices.WithRedis
 		{
 			_redis.GetDatabase().KeyDelete(id.ToString(), CommandFlags.FireAndForget);
 		}
+
+		public bool GetLock(string name)
+		{
+			return _redis.GetDatabase().StringSet("redis-locks:" + name, 1, TimeSpan.FromSeconds(60), When.NotExists);
+		}
+
+		public bool ReleaseLock(string name)
+		{
+			return _redis.GetDatabase().KeyDelete("redis-locks:" + name);
+		}
 	}
 }

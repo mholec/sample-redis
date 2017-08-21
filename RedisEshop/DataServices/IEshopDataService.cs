@@ -21,5 +21,7 @@ namespace RedisEshop.DataServices
 		void RemoveFromShoppingCart(string identifier);
 		OrderViewModel CreateOrderFromShoppingCart();
 		void ProcessOrder();
+		void AddPostalCodeWithSimpleLock(int code, string name);
+		void AddPostalCodeWithRedisLock(int code, string name);
 	}
 }

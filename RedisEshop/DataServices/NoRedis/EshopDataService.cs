@@ -142,5 +142,20 @@ namespace RedisEshop.DataServices.NoRedis
 		{
 			throw new NotImplementedException();
 		}
+
+		public void AddPostalCode()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void AddPostalCodeWithSimpleLock(int code, string name)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void AddPostalCodeWithRedisLock(int code, string name)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

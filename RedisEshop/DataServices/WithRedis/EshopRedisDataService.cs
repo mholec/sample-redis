@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using RedisEshop.Entities;
@@ -78,9 +79,9 @@ namespace RedisEshop.DataServices.WithRedis
 			int? id = _redisService.GetProductIdByIdenfitier(identifier);
 
 			var products = id != null
-				? _db.Products.Where(x => x.ProductId == id)			// just example, should be Find()
-				: _db.Products.Where(x => x.Identifier == identifier);	// just example, should be FirstOrDefault()
-			
+				? _db.Products.Where(x => x.ProductId == id)            // just example, should be Find()
+				: _db.Products.Where(x => x.Identifier == identifier);  // just example, should be FirstOrDefault()
+
 			var product = products.ToViewModel().FirstOrDefault();
 
 			if (product != null)
@@ -119,7 +120,7 @@ namespace RedisEshop.DataServices.WithRedis
 			List<ProductViewModel> result = _db.Products.Include(x => x.ProductTags).ThenInclude(x => x.Tag)
 				.Where(x => mostViewed.Select(y => y.Key).Contains(x.ProductId)).ToViewModel();
 
-			result.ForEach(x => x.Views = (int) mostViewed[x.ProductId]);
+			result.ForEach(x => x.Views = (int)mostViewed[x.ProductId]);
 
 			return result.OrderByDescending(x => x.Views).ToList();
 		}
@@ -153,7 +154,7 @@ namespace RedisEshop.DataServices.WithRedis
 
 			return new ShoppingCartViewModel
 			{
-				ShoppingCartId = cartId, 
+				ShoppingCartId = cartId,
 				Items = items
 			};
 		}
@@ -162,7 +163,7 @@ namespace RedisEshop.DataServices.WithRedis
 		{
 			Guid cartId = ResolveShoppingCartId();
 
-			_redisService.AddShoppingCartItem(cartId, identifier, amount : 1);
+			_redisService.AddShoppingCartItem(cartId, identifier, amount: 1);
 		}
 
 		public void RemoveFromShoppingCart(string identifier)
@@ -177,7 +178,7 @@ namespace RedisEshop.DataServices.WithRedis
 			Guid cartId = ResolveShoppingCartId();
 
 			List<ShoppingCartItemViewModel> items = _redisService.GetShoppingCartItems(cartId);
-			
+
 			return new OrderViewModel()
 			{
 				Items = items.ToDictionary(x => x.Name, x => x.Items),
@@ -191,7 +192,7 @@ namespace RedisEshop.DataServices.WithRedis
 
 			Dictionary<string, int> shoppingCartItems = _redisService.GetShoppingCartItems(cartId)
 				.ToDictionary(x => x.Name, x => x.Items);
-			
+
 			List<Product> products = _db.Products.Where(x => shoppingCartItems.Select(i => i.Key).Contains(x.Identifier)).ToList();
 
 			List<OrderItem> orderItems = new List<OrderItem>();
@@ -218,11 +219,11 @@ namespace RedisEshop.DataServices.WithRedis
 			_db.SaveChanges();
 
 			_redisService.RemoveShoppingCart(cartId);
-			
+
 			// update redis (bestsellers)
-			 // bud background service provede prepocet všeho - blbé řešení, pomalé
-			 // ideálně by se měl aktualizovat jen redis sorted set (problém unikátnosti klíčů)
-			  // předělat to jen na IDčka?
+			// bud background service provede prepocet všeho - blbé řešení, pomalé
+			// ideálně by se měl aktualizovat jen redis sorted set (problém unikátnosti klíčů)
+			// předělat to jen na IDčka?
 		}
 
 		private Guid ResolveShoppingCartId()
@@ -240,6 +241,33 @@ namespace RedisEshop.DataServices.WithRedis
 
 				return newCartId;
 			}
+		}
+
+		public void AddPostalCodeWithSimpleLock(int code, string name)
+		{
+			_db.PostalCodes.Add(new PostalCode
+			{
+				Code = code,
+				Name = name
+			});
+
+			if (_redisService.GetLock(code + name))
+			{
+				// long running operation
+				Thread.Sleep(30000);
+
+				_db.SaveChanges();
+				_redisService.ReleaseLock(code + name);
+			}
+			else
+			{
+				// handle locked
+			}
+		}
+
+		public void AddPostalCodeWithRedisLock(int code, string name)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

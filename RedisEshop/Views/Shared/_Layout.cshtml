@@ -26,10 +26,8 @@
 					<li><a asp-controller="Home" asp-action="DistributedCache">Cachování</a></li>
 		            <li><a asp-controller="Products" asp-action="Home">Homepage</a></li>
 		            <li><a asp-controller="Products" asp-action="Index">Produkty</a></li>
-		            <li><a asp-controller="Products" asp-action="Detail" asp-route-identifier="hkp30">Detail</a></li>
 		            <li><a asp-controller="Orders" asp-action="Process">Objednávka</a></li>
-		            <li><a asp-controller="Logging" asp-action="Index">Logování</a></li>
-		            <li><a asp-controller="Redlock" asp-action="Index">Redlock</a></li>
+		            <li><a asp-controller="Locking" asp-action="Index">Zámky</a></li>
 					@await Component.InvokeAsync("ShoppingCartSummary")
 	            </ul>
             </div>

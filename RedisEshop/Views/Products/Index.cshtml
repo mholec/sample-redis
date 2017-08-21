@@ -47,8 +47,12 @@
 			{
 				<div class="col-md-4">
 					<div class="item">
-						<a asp-controller="Products" asp-action="Detail" asp-route-identifier="@item.Identifier">@item.Title</a>
+						<h3><a asp-controller="Products" asp-action="Detail" asp-route-identifier="@item.Identifier">@item.Title</a></h3>
 						<p>@item.Price.ToString("C2")</p>
+						@foreach (var tag in item.Tags)
+						{
+							<span class="tag">@tag</span>
+						}
 					</div>
 				</div>
 			}

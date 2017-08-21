@@ -253,8 +253,10 @@ namespace RedisEshop.DataServices.WithRedis
 		public void Extras()
 		{
 			// PIPELINING
-			_redis.GetDatabase().StringSetAsync("pipeline:test:A", DateTime.Now.ToString(CultureInfo.InvariantCulture));
-			_redis.GetDatabase().StringSetAsync("pipeline:test:B", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+			Task<bool> a = _redis.GetDatabase().StringSetAsync("pipeline:test:A", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+			Task<bool> b = _redis.GetDatabase().StringSetAsync("pipeline:test:B", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+			_redis.GetDatabase().Wait(a);
+			_redis.GetDatabase().Wait(b);
 			_redis.GetDatabase().StringSetAsync("pipeline:test:C", DateTime.Now.ToString(CultureInfo.InvariantCulture));
 			_redis.GetDatabase().StringSetAsync("pipeline:test:D", DateTime.Now.ToString(CultureInfo.InvariantCulture));
 

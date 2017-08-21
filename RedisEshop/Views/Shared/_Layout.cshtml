@@ -18,7 +18,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Redis Eshop <small>on ASP.NET Core 2.0</small></a>
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Redis Eshop <small>ASP.NET Core 2.0</small></a>
             </div>
             <div class="navbar-collapse collapse">
 	            <ul class="nav navbar-nav">
@@ -28,6 +28,7 @@
 		            <li><a asp-controller="Products" asp-action="Index">Produkty</a></li>
 		            <li><a asp-controller="Orders" asp-action="Process">Objednávka</a></li>
 		            <li><a asp-controller="Locking" asp-action="Index">Zámky</a></li>
+		            <li><a asp-controller="Home" asp-action="Pipelining">Pipelining</a></li>
 					@await Component.InvokeAsync("ShoppingCartSummary")
 	            </ul>
             </div>

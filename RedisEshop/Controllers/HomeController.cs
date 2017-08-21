@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using RedisEshop.DataServices.WithRedis;
 using RedisEshop.Serialization;
 using RedisEshop.ViewModels;
 
@@ -12,11 +14,13 @@ namespace RedisEshop.Controllers
 	{
 		private readonly IDistributedCache _distributedCache;
 		private readonly IDistributedCacheSerializer<StatusViewModel> _serializer;
+		private readonly RedisService _redisService;
 
-		public HomeController(IDistributedCache distributedCache, IDistributedCacheSerializer<StatusViewModel> serializer)
+		public HomeController(IDistributedCache distributedCache, IDistributedCacheSerializer<StatusViewModel> serializer, RedisService redisService)
 		{
 			this._distributedCache = distributedCache;
 			_serializer = serializer;
+			_redisService = redisService;
 		}
 
 		[Route("")]
@@ -52,5 +56,12 @@ namespace RedisEshop.Controllers
 			return View(status);
 		}
 
+		[Route("home/pipelining")]
+		public IActionResult Pipelining()
+		{
+			_redisService.Extras();
+
+			return RedirectToAction("QuickStart");
+		}
 	}
 }

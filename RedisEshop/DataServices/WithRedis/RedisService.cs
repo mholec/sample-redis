@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RedisEshop.Entities;
 using RedisEshop.ViewModels;
@@ -246,6 +248,36 @@ namespace RedisEshop.DataServices.WithRedis
 		public bool ReleaseLock(string name)
 		{
 			return _redis.GetDatabase().KeyDelete("redis-locks:" + name);
+		}
+
+		public void Extras()
+		{
+			// PIPELINING
+			_redis.GetDatabase().StringSetAsync("pipeline:test:A", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+			_redis.GetDatabase().StringSetAsync("pipeline:test:B", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+			_redis.GetDatabase().StringSetAsync("pipeline:test:C", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+			_redis.GetDatabase().StringSetAsync("pipeline:test:D", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+
+			// TRANSACTIONS
+			// - balík požadavků, který se pošle na server najednou
+			// - balík požadavků, který se na serveru zpracuje najednou (sekvenčně)
+			ITransaction transaction = _redis.GetDatabase().CreateTransaction();
+			transaction.StringSetAsync("transaction:test:A", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+			transaction.StringSetAsync("transaction:test:B", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+			transaction.StringSetAsync("transaction:test:C", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+			transaction.StringSetAsync("transaction:test:D", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+			transaction.Execute();
+
+			// BATCH
+			// - balík požadavků, který se pošle na server najednou (vše)
+			// - nejedná se o transakci, která by zaručila vykonání na straně serveru sekvenčně
+			// - jedná se ale o dávku z pohledu multiplexeru (dávka nebude narušena ničím jiným odeslaným z tohoto projektu)
+			IBatch batch = _redis.GetDatabase().CreateBatch("ss");
+			batch.StringSetAsync("batch:test:A", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+			batch.StringSetAsync("batch:test:B", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+			batch.StringSetAsync("batch:test:C", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+			batch.StringSetAsync("batch:test:D", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+			batch.Execute();
 		}
 	}
 }

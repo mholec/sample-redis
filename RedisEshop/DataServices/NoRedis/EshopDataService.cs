@@ -132,5 +132,10 @@ namespace RedisEshop.DataServices.NoRedis
 		{
 			throw new NotImplementedException();
 		}
+
+		public OrderViewModel CreateOrderFromShoppingCart()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

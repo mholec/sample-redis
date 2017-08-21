@@ -1,0 +1,26 @@
+﻿@model OrderViewModel
+
+<div class="row">
+	<div class="col-md-9">
+		<h1>Objednávka zboží</h1>
+
+		<table class="table table-bordered">
+			<tr>
+				<th>Produkt</th>
+				<th>Cena za ks</th>
+				<th>Počet kusů</th>
+				<th>Celková cena</th>
+			</tr>
+			@foreach (var item in Model.Products)
+			{
+				decimal total = Model.Items[item.Identifier] * item.Price;
+				<tr>
+					<td>@item.Title</td>
+					<td>@item.Price.ToString("C2")</td>
+					<td>@Model.Items[item.Identifier] ks</td>
+					<td>@total.ToString("C2")</td>
+				</tr>
+			}
+		</table>
+	</div>
+</div>

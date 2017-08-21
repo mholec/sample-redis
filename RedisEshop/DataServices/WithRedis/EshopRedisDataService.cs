@@ -172,6 +172,19 @@ namespace RedisEshop.DataServices.WithRedis
 			_redisService.RemoveShoppingCartItem(cartId, identifier);
 		}
 
+		public OrderViewModel CreateOrderFromShoppingCart()
+		{
+			Guid cartId = ResolveShoppingCartId();
+
+			List<ShoppingCartItemViewModel> items = _redisService.GetShoppingCartItems(cartId);
+			
+			return new OrderViewModel()
+			{
+				Items = items.ToDictionary(x => x.Name, x => x.Items),
+				Products = _db.Products.Where(x => items.Select(i => i.Name).Contains(x.Identifier)).ToViewModel()
+			};
+		}
+
 		private Guid ResolveShoppingCartId()
 		{
 			string cartId = _httpContextAccessor.HttpContext.Request.Cookies["CartId"];

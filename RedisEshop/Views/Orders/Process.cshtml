@@ -15,7 +15,7 @@
 			{
 				decimal total = Model.Items[item.Identifier] * item.Price;
 				<tr>
-					<td>@item.Title</td>
+					<td><a asp-controller="Products" asp-action="Detail" asp-route-identifier="@item.Identifier">@item.Title</a></td>
 					<td>@item.Price.ToString("C2")</td>
 					<td>@Model.Items[item.Identifier] ks</td>
 					<td>@total.ToString("C2")</td>

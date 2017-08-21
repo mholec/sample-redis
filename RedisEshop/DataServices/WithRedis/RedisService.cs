@@ -91,6 +91,7 @@ namespace RedisEshop.DataServices.WithRedis
 			return articleIds;
 		}
 
+		// todo: toto je křehké, protože když se změní produkt, změní se tím i jako KEY
 		public Dictionary<Product, double> Bestsellers(int count)
 		{
 			string keyName = "products:bestsellers";
@@ -99,6 +100,7 @@ namespace RedisEshop.DataServices.WithRedis
 
 			return data.ToDictionary(x => JsonConvert.DeserializeObject<Product>(x.Element), x => x.Score);
 		}
+
 		public Dictionary<int, double> MostViewedProducts(int count)
 		{
 			string keyName = "products:visits";
@@ -199,6 +201,7 @@ namespace RedisEshop.DataServices.WithRedis
 			}).ToList();
 		}
 
+		// todo: možná to má rovnou vracet dictionary
 		public List<ShoppingCartItemViewModel> GetShoppingCartItems(Guid id)
 		{
 			HashEntry[] items = _redis.GetDatabase().HashGetAll("shoppingCart:" + id);
@@ -228,6 +231,11 @@ namespace RedisEshop.DataServices.WithRedis
 		public void RemoveShoppingCartItem(Guid id, string identifier)
 		{
 			_redis.GetDatabase().HashDelete("shoppingCart:" + id, identifier, CommandFlags.FireAndForget);
+		}
+
+		public void RemoveShoppingCart(Guid id)
+		{
+			_redis.GetDatabase().KeyDelete(id.ToString(), CommandFlags.FireAndForget);
 		}
 	}
 }

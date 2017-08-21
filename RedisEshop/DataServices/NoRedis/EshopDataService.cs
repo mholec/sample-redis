@@ -137,5 +137,10 @@ namespace RedisEshop.DataServices.NoRedis
 		{
 			throw new NotImplementedException();
 		}
+
+		public void ProcessOrder()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

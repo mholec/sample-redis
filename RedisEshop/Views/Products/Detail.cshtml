@@ -9,7 +9,7 @@
 		<a asp-controller="ShoppingCart" asp-action="AddToShoppingCart" asp-route-identifier="@Model.Identifier" class="btn btn-success">Přidat do košíku</a>
 		@if (Model.InBasket > 0)
 		{
-			<a asp-controller="ShoppingCart" asp-action="RemoveFromShoppingCart" asp-route-identifier="@Model.Identifier" class="btn btn-success">Odebrat z košíku (@Model.InBasket)</a>
+			<a asp-controller="ShoppingCart" asp-action="RemoveFromShoppingCart" asp-route-identifier="@Model.Identifier" class="btn btn-warning">Odebrat z košíku (@Model.InBasket)</a>
 		}
 	</div>
 </div>

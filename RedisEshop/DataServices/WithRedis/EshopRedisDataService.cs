@@ -185,6 +185,46 @@ namespace RedisEshop.DataServices.WithRedis
 			};
 		}
 
+		public void ProcessOrder()
+		{
+			Guid cartId = ResolveShoppingCartId();
+
+			Dictionary<string, int> shoppingCartItems = _redisService.GetShoppingCartItems(cartId)
+				.ToDictionary(x => x.Name, x => x.Items);
+			
+			List<Product> products = _db.Products.Where(x => shoppingCartItems.Select(i => i.Key).Contains(x.Identifier)).ToList();
+
+			List<OrderItem> orderItems = new List<OrderItem>();
+			foreach (var shoppingCartItem in shoppingCartItems)
+			{
+				var product = products.FirstOrDefault(x => x.Identifier == shoppingCartItem.Key);
+				orderItems.Add(new OrderItem
+				{
+					Count = shoppingCartItem.Value,
+					ProductId = product.ProductId,
+					Price = product.Price,
+					Name = product.Title,
+					TotalPrice = product.Price * shoppingCartItem.Value,
+				});
+			}
+
+			var order = new Order
+			{
+				Created = DateTime.Now,
+				OrderItems = orderItems
+			};
+
+			_db.Orders.Add(order);
+			_db.SaveChanges();
+
+			_redisService.RemoveShoppingCart(cartId);
+			
+			// update redis (bestsellers)
+			 // bud background service provede prepocet všeho - blbé řešení, pomalé
+			 // ideálně by se měl aktualizovat jen redis sorted set (problém unikátnosti klíčů)
+			  // předělat to jen na IDčka?
+		}
+
 		private Guid ResolveShoppingCartId()
 		{
 			string cartId = _httpContextAccessor.HttpContext.Request.Cookies["CartId"];

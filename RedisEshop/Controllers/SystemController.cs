@@ -17,7 +17,7 @@ namespace RedisEshop.Controllers
 		{
 			_redisCleanup.RestoreRedis();
 
-			return Content("OK");
+			return RedirectToAction("QuickStart", "Home");
 		}
 	}
 }

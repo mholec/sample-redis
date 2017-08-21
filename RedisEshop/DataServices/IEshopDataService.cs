@@ -20,5 +20,6 @@ namespace RedisEshop.DataServices
 		void AddToShoppingCart(string identifier);
 		void RemoveFromShoppingCart(string identifier);
 		OrderViewModel CreateOrderFromShoppingCart();
+		void ProcessOrder();
 	}
 }

@@ -147,29 +147,29 @@ namespace RedisEshop.DataServices.WithRedis
 
 		public ShoppingCartViewModel GetShoppingCart()
 		{
-			Guid id = ResolveShoppingCartId();
+			Guid cartId = ResolveShoppingCartId();
 
-			var items = _redisService.GetShoppingCartItems(id);
+			List<ShoppingCartItemViewModel> items = _redisService.GetShoppingCartItems(cartId);
 
 			return new ShoppingCartViewModel
 			{
-				ShoppingCartId = id, 
+				ShoppingCartId = cartId, 
 				Items = items
 			};
 		}
 
 		public void AddToShoppingCart(string identifier)
 		{
-			Guid id = ResolveShoppingCartId();
+			Guid cartId = ResolveShoppingCartId();
 
-			_redisService.AddShoppingCartItem(id, identifier, 1);
+			_redisService.AddShoppingCartItem(cartId, identifier, amount : 1);
 		}
 
 		public void RemoveFromShoppingCart(string identifier)
 		{
-			Guid id = ResolveShoppingCartId();
+			Guid cartId = ResolveShoppingCartId();
 
-			_redisService.RemoveShoppingCartItem(id, identifier);
+			_redisService.RemoveShoppingCartItem(cartId, identifier);
 		}
 
 		private Guid ResolveShoppingCartId()

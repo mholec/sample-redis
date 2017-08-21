@@ -210,9 +210,9 @@ namespace RedisEshop.DataServices.WithRedis
 			}).ToList();
 		}
 
-		public void AddShoppingCartItem(Guid id, string identifier, int items)
+		public void AddShoppingCartItem(Guid cartId, string identifier, int amount)
 		{
-			_redis.GetDatabase().HashIncrement("shoppingCart:" + id, identifier, items, CommandFlags.FireAndForget);
+			_redis.GetDatabase().HashIncrement("shoppingCart:" + cartId, identifier, amount, CommandFlags.FireAndForget);
 		}
 
 		public bool HasShoppingCartItem(Guid id, string identifier)

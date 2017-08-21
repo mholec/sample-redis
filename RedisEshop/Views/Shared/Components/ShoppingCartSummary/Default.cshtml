@@ -1,0 +1,10 @@
+﻿@model ShoppingCartViewModel
+
+<li>
+	<a asp-controller="ShoppingCart" asp-action="Index">
+		<span class="glyphicon glyphicon-shopping-cart"></span>
+		<span id="cart-status">
+			@Model.Items.Sum(x => x.Items)
+		</span>
+	</a>
+</li>

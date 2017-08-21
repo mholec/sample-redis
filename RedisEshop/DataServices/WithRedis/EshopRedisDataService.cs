@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using RedisEshop.Entities;
 using RedisEshop.Mapping;
@@ -14,11 +16,13 @@ namespace RedisEshop.DataServices.WithRedis
 	{
 		private readonly AppDbContext _db;
 		private readonly RedisService _redisService;
+		private readonly IHttpContextAccessor _httpContextAccessor;
 
-		public EshopRedisDataService(AppDbContext db, RedisService redisService)
+		public EshopRedisDataService(AppDbContext db, RedisService redisService, IHttpContextAccessor httpContextAccessor)
 		{
 			_db = db;
 			_redisService = redisService;
+			_httpContextAccessor = httpContextAccessor;
 		}
 
 		public List<ProductViewModel> GetLatestProducts(int count)
@@ -132,6 +136,43 @@ namespace RedisEshop.DataServices.WithRedis
 			}
 
 			return _redisService.GetPostalCodes(int.Parse(postalCode));
+		}
+
+		public ShoppingCartViewModel GetShoppingCart()
+		{
+			Guid id = ResolveShoppingCartId();
+
+			var items = _redisService.GetShoppingCartItems(id);
+
+			return new ShoppingCartViewModel
+			{
+				ShoppingCartId = id, 
+				Items = items
+			};
+		}
+
+		public void AddToShoppingCart(string identifier)
+		{
+			Guid id = ResolveShoppingCartId();
+
+			_redisService.AddShoppingCartItem(id, identifier, 1);
+		}
+
+		private Guid ResolveShoppingCartId()
+		{
+			string cartId = _httpContextAccessor.HttpContext.Request.Cookies["CartId"];
+
+			if (cartId != null)
+			{
+				return Guid.Parse(cartId);
+			}
+			else
+			{
+				Guid newCartId = Guid.NewGuid();
+				_httpContextAccessor.HttpContext.Response.Cookies.Append("CartId", newCartId.ToString());
+
+				return newCartId;
+			}
 		}
 	}
 }

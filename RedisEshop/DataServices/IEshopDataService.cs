@@ -16,5 +16,7 @@ namespace RedisEshop.DataServices
 		(string, string) NewsletterSubscribe(string email);
 		IEnumerable<string> SendNewsletters();
 		List<PostalCode> GetMunicipalities(string postalCode);
+		ShoppingCartViewModel GetShoppingCart();
+		void AddToShoppingCart(string identifier);
 	}
 }

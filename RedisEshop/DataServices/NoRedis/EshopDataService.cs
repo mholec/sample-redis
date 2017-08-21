@@ -113,5 +113,15 @@ namespace RedisEshop.DataServices.NoRedis
 		{
 			throw new NotImplementedException();
 		}
+
+		public ShoppingCartViewModel GetShoppingCart()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void AddToShoppingCart(string identifier)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

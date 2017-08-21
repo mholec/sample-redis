@@ -30,6 +30,7 @@
 		            <li><a asp-controller="Orders" asp-action="Index">Objednávka</a></li>
 		            <li><a asp-controller="Logging" asp-action="Index">Logování</a></li>
 		            <li><a asp-controller="Redlock" asp-action="Index">Redlock</a></li>
+					@await Component.InvokeAsync("ShoppingCartSummary")
 	            </ul>
             </div>
         </div>

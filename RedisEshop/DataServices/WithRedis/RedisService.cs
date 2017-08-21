@@ -198,5 +198,21 @@ namespace RedisEshop.DataServices.WithRedis
 				Name = x.Element
 			}).ToList();
 		}
+
+		public List<ShoppingCartItemViewModel> GetShoppingCartItems(Guid id)
+		{
+			HashEntry[] items = _redis.GetDatabase().HashGetAll("shoppingCart:" + id);
+
+			return items.Select(x => new ShoppingCartItemViewModel()
+			{
+				Name = x.Name,
+				Items = int.Parse(x.Value)
+			}).ToList();
+		}
+
+		public void AddShoppingCartItem(Guid id, string identifier, int items)
+		{
+			_redis.GetDatabase().HashIncrement("shoppingCart:" + id, identifier, items, CommandFlags.FireAndForget);
+		}
 	}
 }

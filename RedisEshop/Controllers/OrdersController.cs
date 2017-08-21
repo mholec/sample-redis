@@ -20,8 +20,10 @@ namespace RedisEshop.Controllers
 			return Ok(result);
 		}
 
-		public IActionResult AddToBasket(string identifier)
+		public IActionResult AddToShoppingCart(string identifier)
 		{
+			_eshopDataService.AddToShoppingCart(identifier);
+
 			return RedirectToAction("Detail", "Products", new { identifier });
 		}
 	}

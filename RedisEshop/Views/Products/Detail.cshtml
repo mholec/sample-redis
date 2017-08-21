@@ -6,9 +6,7 @@
 		<p>@Model.Description</p>
 		<p>Cena: @Model.Price.ToString("C2")</p>
 		
-		<form asp-controller="Orders" asp-action="AddToBasket" asp-route-id="@Model.Identifier" method="get">
-			<input type="submit" value="Přidat do košíku" class="btn btn-success"/>
-		</form>
+		<a asp-controller="Orders" asp-action="AddToShoppingCart" asp-route-identifier="@Model.Identifier" class="btn btn-success">Přidat do košíku</a>
 	</div>
 </div>
 

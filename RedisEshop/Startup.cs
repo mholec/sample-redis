@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using RedisEshop.DataServices;
 using RedisEshop.DataServices.WithRedis;
@@ -26,6 +28,7 @@ namespace RedisEshop
         public void ConfigureServices(IServiceCollection services)
         {
 			// SERVICES
+			services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 	        services.AddScoped<CommonListService, CommonListService>();
 	        services.AddScoped<RedisBackgroundServices, RedisBackgroundServices>();
 	        services.AddScoped<IEshopDataService, EshopRedisDataService>();
@@ -33,6 +36,7 @@ namespace RedisEshop
 	        services.AddScoped(typeof(IDistributedCacheSerializer<>), typeof(ProtobufDistributedCacheSerializer<>));
 
 	        services.AddResponseCaching();
+	        services.AddSession();
 
 			// REDIS
 	        var redisConnectionString = Configuration.GetConnectionString("RedisConnection"); 
@@ -62,6 +66,7 @@ namespace RedisEshop
             loggerFactory.AddDebug();
 
 	        app.UseResponseCaching();
+	        app.UseSession();
 
             if (env.IsDevelopment())
             {

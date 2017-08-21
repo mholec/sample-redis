@@ -80,8 +80,15 @@ namespace RedisEshop.DataServices.WithRedis
 			var products = id != null
 				? _db.Products.Where(x => x.ProductId == id)			// just example, should be Find()
 				: _db.Products.Where(x => x.Identifier == identifier);	// just example, should be FirstOrDefault()
+			
+			var product = products.ToViewModel().FirstOrDefault();
 
-			return products.ToViewModel().FirstOrDefault();
+			if (product != null)
+			{
+				product.InBasket = _redisService.CountShoppingCartItem(ResolveShoppingCartId(), identifier);
+			}
+
+			return product;
 		}
 
 		public (string, string) NewsletterSubscribe(string email)
@@ -156,6 +163,13 @@ namespace RedisEshop.DataServices.WithRedis
 			Guid id = ResolveShoppingCartId();
 
 			_redisService.AddShoppingCartItem(id, identifier, 1);
+		}
+
+		public void RemoveFromShoppingCart(string identifier)
+		{
+			Guid id = ResolveShoppingCartId();
+
+			_redisService.RemoveShoppingCartItem(id, identifier);
 		}
 
 		private Guid ResolveShoppingCartId()

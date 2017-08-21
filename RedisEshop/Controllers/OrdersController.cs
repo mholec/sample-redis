@@ -26,5 +26,12 @@ namespace RedisEshop.Controllers
 
 			return RedirectToAction("Detail", "Products", new { identifier });
 		}
+
+		public IActionResult RemoveFromShoppingCart(string identifier)
+		{
+			_eshopDataService.RemoveFromShoppingCart(identifier);
+
+			return RedirectToAction("Detail", "Products", new { identifier });
+		}
 	}
 }

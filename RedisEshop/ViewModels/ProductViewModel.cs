@@ -13,6 +13,7 @@ namespace RedisEshop.ViewModels
 		public int PurchasesCount { get; set; }
 		public int Views { get; set; }
 		public DateTime Added { get; set; }
+		public int InBasket { get; set; }
 
 		public List<string> Tags { get; set; }
     }

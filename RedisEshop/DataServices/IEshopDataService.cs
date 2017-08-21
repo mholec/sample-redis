@@ -18,5 +18,6 @@ namespace RedisEshop.DataServices
 		List<PostalCode> GetMunicipalities(string postalCode);
 		ShoppingCartViewModel GetShoppingCart();
 		void AddToShoppingCart(string identifier);
+		void RemoveFromShoppingCart(string identifier);
 	}
 }

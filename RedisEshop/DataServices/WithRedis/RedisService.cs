@@ -214,5 +214,20 @@ namespace RedisEshop.DataServices.WithRedis
 		{
 			_redis.GetDatabase().HashIncrement("shoppingCart:" + id, identifier, items, CommandFlags.FireAndForget);
 		}
+
+		public bool HasShoppingCartItem(Guid id, string identifier)
+		{
+			return _redis.GetDatabase().HashExists("shoppingCart:" + id, identifier);
+		}
+
+		public int CountShoppingCartItem(Guid id, string identifier)
+		{
+			return (int)_redis.GetDatabase().HashGet("shoppingCart:" + id, identifier);
+		}
+
+		public void RemoveShoppingCartItem(Guid id, string identifier)
+		{
+			_redis.GetDatabase().HashDelete("shoppingCart:" + id, identifier, CommandFlags.FireAndForget);
+		}
 	}
 }

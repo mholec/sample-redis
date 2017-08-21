@@ -20,6 +20,10 @@ namespace RedisEshop.DataServices.NoRedis
 			this._db = db;
 		}
 
+		public EshopDataService()
+		{
+		}
+
 		public List<ProductViewModel> GetProductsByTags(int[] tagIds)
 		{
 			IQueryable<Product> dataQuery = _db.Products
@@ -120,6 +124,11 @@ namespace RedisEshop.DataServices.NoRedis
 		}
 
 		public void AddToShoppingCart(string identifier)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void RemoveFromShoppingCart(string identifier)
 		{
 			throw new NotImplementedException();
 		}

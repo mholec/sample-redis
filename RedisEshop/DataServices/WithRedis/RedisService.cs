@@ -281,5 +281,30 @@ namespace RedisEshop.DataServices.WithRedis
 			batch.StringSetAsync("batch:test:D", DateTime.Now.ToString(CultureInfo.InvariantCulture));
 			batch.Execute();
 		}
+
+		public void SubscribeToPageViews()
+		{
+			string notificationChannel = "__keyspace@" + _redis.GetDatabase().Database + "__:*";
+
+			var subscriber = _redis.GetSubscriber();
+			subscriber.Subscribe(notificationChannel, (channel, notificationType) =>
+			{
+				string key = GetKeyForKeyspaceNotification(channel);
+				if (notificationType == "incrby")
+				{
+					int visits = (int)_redis.GetDatabase().StringGet(key);
+				}
+			});
+		}
+
+		private static string GetKeyForKeyspaceNotification(string channel)
+        {
+            var index = channel.IndexOf(':');
+            if (index >= 0 && index < channel.Length - 1)
+                return channel.Substring(index + 1);
+
+            //we didn't find the delimeter, so just return the whole thing
+            return channel;
+        }
 	}
 }

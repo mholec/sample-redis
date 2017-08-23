@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using RedisEshop.Entities;
 using RedisEshop.Mapping;
 using RedisEshop.ViewModels;
+using RedLock;
 
 namespace RedisEshop.DataServices.WithRedis
 {
@@ -18,12 +19,14 @@ namespace RedisEshop.DataServices.WithRedis
 		private readonly AppDbContext _db;
 		private readonly RedisService _redisService;
 		private readonly IHttpContextAccessor _httpContextAccessor;
+		private readonly RedisLockFactory _redisLockFactory;
 
-		public EshopRedisDataService(AppDbContext db, RedisService redisService, IHttpContextAccessor httpContextAccessor)
+		public EshopRedisDataService(AppDbContext db, RedisService redisService, IHttpContextAccessor httpContextAccessor, RedisLockFactory redisLockFactory)
 		{
 			_db = db;
 			_redisService = redisService;
 			_httpContextAccessor = httpContextAccessor;
+			_redisLockFactory = redisLockFactory;
 		}
 
 		public List<ProductViewModel> GetLatestProducts(int count)
@@ -261,13 +264,32 @@ namespace RedisEshop.DataServices.WithRedis
 			}
 			else
 			{
-				// handle locked
+				// when locked
 			}
 		}
 
 		public void AddPostalCodeWithRedisLock(int code, string name)
 		{
-			throw new NotImplementedException();
+			_db.PostalCodes.Add(new PostalCode
+			{
+				Code = code,
+				Name = name
+			});
+
+			using (var redisLock = _redisLockFactory.Create(code + name, TimeSpan.FromSeconds(60)))
+			{
+				if (redisLock.IsAcquired)
+				{
+					// long running operation
+					Thread.Sleep(30000);
+
+					_db.SaveChanges();
+				}
+				else
+				{
+					// when locked
+				}
+			}
 		}
 	}
 }

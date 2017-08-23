@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Net;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using RedisEshop.Entities;
 using RedisEshop.Maintenance;
 using RedisEshop.Serialization;
 using RedisEshop.ViewModels;
+using RedLock;
 using StackExchange.Redis;
 
 namespace RedisEshop
@@ -40,12 +42,15 @@ namespace RedisEshop
 
 			// REDIS
 	        var redisConnectionString = Configuration.GetConnectionString("RedisConnection"); 
-	        ConfigurationOptions opt = ConfigurationOptions.Parse(redisConnectionString);
-	        opt.AbortOnConnectFail = false;
-	        opt.ConnectRetry = 3;
-	        opt.ConnectTimeout = 3000;
-	        opt.AllowAdmin = true; // na vlastni riziko
-	        services.AddSingleton(x => ConnectionMultiplexer.Connect(opt));
+	        ConfigurationOptions configOptions = ConfigurationOptions.Parse(redisConnectionString);
+	        configOptions.AbortOnConnectFail = false;
+	        configOptions.ConnectRetry = 3;
+	        configOptions.ConnectTimeout = 3000;
+	        configOptions.AllowAdmin = true; // na vlastni riziko
+	        services.AddSingleton(x => ConnectionMultiplexer.Connect(configOptions));
+
+			//REDLOCK
+	        services.AddScoped(x => new RedisLockFactory(configOptions.EndPoints));
 
 			services.AddDistributedRedisCache(options =>
 			{

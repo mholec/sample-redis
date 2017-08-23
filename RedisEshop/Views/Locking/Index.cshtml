@@ -2,7 +2,7 @@
 	<div class="col-md-9">
 		<h1>Simple lock</h1>
 		
-		<form asp-controller="Redlock" asp-action="SimpleLock" method="get">
+		<form asp-controller="Locking" asp-action="SimpleLock" method="get">
 			<input type="text" name="code" placeholder="code" class="form-control"/>
 			<input type="text" name="name" placeholder="name" class="form-control"/>
 			<input type="submit" value="Odeslat" class="btn btn-success" />
@@ -10,7 +10,7 @@
 		
 		<h1>RedLock</h1>
 		<p><a href="https://github.com/samcook/RedLock.net">RedLock.net</a></p>
-		<form asp-controller="Redlock" asp-action="RedLock" method="get">
+		<form asp-controller="Locking" asp-action="RedLock" method="get">
 			<input type="text" name="code" placeholder="code" class="form-control" />
 			<input type="text" name="name" placeholder="name" class="form-control" />
 			<input type="submit" value="Odeslat" class="btn btn-success" />

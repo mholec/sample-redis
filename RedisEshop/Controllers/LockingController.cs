@@ -33,7 +33,7 @@ namespace RedisEshop.Controllers
 		[HttpGet]
 		public IActionResult RedLock(int code, string name)
 		{
-			_eshopDataService.AddPostalCodeWithSimpleLock(code, name);
+			_eshopDataService.AddPostalCodeWithRedisLock(code, name);
 
 			return RedirectToAction("Index");
 		}

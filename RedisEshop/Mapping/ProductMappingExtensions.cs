@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using RedisEshop.Dto;
 using RedisEshop.Entities;
 using RedisEshop.ViewModels;
 

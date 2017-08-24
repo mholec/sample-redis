@@ -9,7 +9,7 @@ namespace RedisEshop.Controllers
 
 		public ShoppingCartController(IEshopDataService eshopDataService)
 		{
-			this._eshopDataService = eshopDataService;
+			_eshopDataService = eshopDataService;
 		}
 
 		[Route("shoppingcart/add/{identifier}")]

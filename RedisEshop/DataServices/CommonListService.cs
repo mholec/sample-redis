@@ -21,7 +21,7 @@ namespace RedisEshop.DataServices
 
 		public Dictionary<TagType, string> TagTypes()
 		{
-			return new Dictionary<TagType, string>()
+			return new Dictionary<TagType, string>
 			{
 				{TagType.KindOfWeapon, "Druh zbraně"},
 				{TagType.Caliber, "Ráže"},

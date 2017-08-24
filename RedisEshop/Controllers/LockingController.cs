@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using RedisEshop.DataServices;
 
 namespace RedisEshop.Controllers
@@ -10,7 +9,7 @@ namespace RedisEshop.Controllers
 
 		public LockingController(IEshopDataService eshopDataService)
 		{
-			this._eshopDataService = eshopDataService;
+			_eshopDataService = eshopDataService;
 		}
 
 		[Route("locking/index")]

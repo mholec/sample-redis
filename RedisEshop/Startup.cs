@@ -1,5 +1,4 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -8,11 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using RedisEshop.DataServices;
-using RedisEshop.DataServices.WithRedis;
 using RedisEshop.Entities;
 using RedisEshop.Maintenance;
 using RedisEshop.Serialization;
-using RedisEshop.ViewModels;
 using RedLock;
 using StackExchange.Redis;
 
@@ -33,7 +30,7 @@ namespace RedisEshop
 			services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 	        services.AddScoped<CommonListService, CommonListService>();
 	        services.AddScoped<RedisBackgroundServices, RedisBackgroundServices>();
-	        services.AddScoped<IEshopDataService, EshopRedisDataService>();
+	        services.AddScoped<IEshopDataService, EshopDataService>();
 	        services.AddScoped<RedisService, RedisService>();
 	        services.AddScoped(typeof(IDistributedCacheSerializer<>), typeof(ProtobufDistributedCacheSerializer<>));
 
@@ -49,9 +46,11 @@ namespace RedisEshop
 	        configOptions.AllowAdmin = true; // na vlastni riziko
 	        services.AddSingleton(x => ConnectionMultiplexer.Connect(configOptions));
 
-			//REDLOCK
+			// REDLOCK
 	        services.AddScoped(x => new RedisLockFactory(configOptions.EndPoints));
 
+
+			// DISTRIBUTED CACHE
 			services.AddDistributedRedisCache(options =>
 			{
 				options.Configuration = redisConnectionString;

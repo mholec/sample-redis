@@ -4,12 +4,13 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using RedisEshop.Dto;
 using RedisEshop.Entities;
 using RedisEshop.ViewModels;
 using StackExchange.Redis;
 using Order = StackExchange.Redis.Order;
 
-namespace RedisEshop.DataServices.WithRedis
+namespace RedisEshop.DataServices
 {
 	/// <summary>
 	/// Služba pro komunikaci s Redis serverem
@@ -20,7 +21,7 @@ namespace RedisEshop.DataServices.WithRedis
 
 		public RedisService(ConnectionMultiplexer redis)
 		{
-			this._redis = redis;
+			_redis = redis;
 		}
 
 		public List<Product> LatestProducts(int count)

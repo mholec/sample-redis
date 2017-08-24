@@ -4,24 +4,25 @@ using System.Linq;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using RedisEshop.Dto;
 using RedisEshop.Entities;
 using RedisEshop.Mapping;
 using RedisEshop.ViewModels;
 using RedLock;
 
-namespace RedisEshop.DataServices.WithRedis
+namespace RedisEshop.DataServices
 {
 	/// <summary>
 	/// Služba napojená na SQL databázi s využitím Redis
 	/// </summary>
-	public class EshopRedisDataService : IEshopDataService
+	public class EshopDataService : IEshopDataService
 	{
 		private readonly AppDbContext _db;
 		private readonly RedisService _redisService;
 		private readonly IHttpContextAccessor _httpContextAccessor;
 		private readonly RedisLockFactory _redisLockFactory;
 
-		public EshopRedisDataService(AppDbContext db, RedisService redisService, IHttpContextAccessor httpContextAccessor, RedisLockFactory redisLockFactory)
+		public EshopDataService(AppDbContext db, RedisService redisService, IHttpContextAccessor httpContextAccessor, RedisLockFactory redisLockFactory)
 		{
 			_db = db;
 			_redisService = redisService;

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
-using RedisEshop.DataServices.WithRedis;
+using RedisEshop.DataServices;
 using RedisEshop.Serialization;
 using RedisEshop.ViewModels;
 
@@ -18,7 +15,7 @@ namespace RedisEshop.Controllers
 
 		public HomeController(IDistributedCache distributedCache, IDistributedCacheSerializer<StatusViewModel> serializer, RedisService redisService)
 		{
-			this._distributedCache = distributedCache;
+			_distributedCache = distributedCache;
 			_serializer = serializer;
 			_redisService = redisService;
 		}

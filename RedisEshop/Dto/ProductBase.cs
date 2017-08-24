@@ -1,4 +1,4 @@
-﻿namespace RedisEshop.Entities
+﻿namespace RedisEshop.Dto
 {
 	public class ProductBase
 	{

@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RedisEshop.DataServices;
+using RedisEshop.Dto;
 using RedisEshop.Entities;
 using StackExchange.Redis;
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RedisEshop.DataServices;
 using RedisEshop.Entities;
@@ -117,12 +118,17 @@ namespace RedisEshop.Maintenance
 
 		private void InitBestsellers()
 		{
-			SortedSetEntry[] data = _db.Products
+			SortedSetEntry[] data = _db.Products.Include(x => x.OrderedItems)
 				// select from database
-				.Select(x => new { Product = x, Orders = x.OrderedItems.Sum(y => y.Count) })
+				.Select(x => new { Product = x, Orders = x.OrderedItems.Sum(y => y.Count) }).ToList()
 
 				// project to sortedset
-				.Select(x => new SortedSetEntry(JsonConvert.SerializeObject(x.Product, new JsonSerializerSettings()
+				.Select(x => new SortedSetEntry(JsonConvert.SerializeObject(new ProductBase
+				{
+					ProductId = x.Product.ProductId,
+					Identifier = x.Product.Identifier,
+					Title = x.Product.Title
+				}, new JsonSerializerSettings()
 				{
 					ReferenceLoopHandling = ReferenceLoopHandling.Ignore
 				}), (double)x.Orders)).ToArray();

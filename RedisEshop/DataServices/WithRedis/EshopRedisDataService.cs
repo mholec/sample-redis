@@ -61,12 +61,12 @@ namespace RedisEshop.DataServices.WithRedis
 			return dataQuery.ToViewModel();
 		}
 
-		public List<ProductViewModel> Bestsellers(int count)
+		public List<ProductBaseViewModel> Bestsellers(int count)
 		{
-			Dictionary<Product, double> topRated = _redisService.Bestsellers(count);
+			Dictionary<ProductBase, double> topRated = _redisService.Bestsellers(count);
 			Dictionary<int, double> scoresheet = topRated.ToDictionary(x => x.Key.ProductId, x => x.Value);
 
-			List<ProductViewModel> data = topRated.Select(x => x.Key).AsQueryable().ToViewModel();
+			List<ProductBaseViewModel> data = topRated.Select(x => x.Key).AsQueryable().ToViewModel();
 			data.ForEach(x => x.PurchasesCount = (int)scoresheet[x.ProductId]);
 
 			return data;
@@ -189,7 +189,7 @@ namespace RedisEshop.DataServices.WithRedis
 			};
 		}
 
-		public void ProcessOrder()
+		public void ProcessOrder(OrderViewModel orderViewModel)
 		{
 			Guid cartId = ResolveShoppingCartId();
 
@@ -201,19 +201,24 @@ namespace RedisEshop.DataServices.WithRedis
 			List<OrderItem> orderItems = new List<OrderItem>();
 			foreach (var shoppingCartItem in shoppingCartItems)
 			{
-				var product = products.FirstOrDefault(x => x.Identifier == shoppingCartItem.Key);
-				orderItems.Add(new OrderItem
+				Product product = products.FirstOrDefault(x => x.Identifier == shoppingCartItem.Key);
+				if (product != null)
 				{
-					Count = shoppingCartItem.Value,
-					ProductId = product.ProductId,
-					Price = product.Price,
-					Name = product.Title,
-					TotalPrice = product.Price * shoppingCartItem.Value,
-				});
+					orderItems.Add(new OrderItem
+					{
+						Count = shoppingCartItem.Value,
+						ProductId = product.ProductId,
+						Price = product.Price,
+						Name = product.Title,
+						TotalPrice = product.Price * shoppingCartItem.Value,
+					});
+				}
 			}
 
 			var order = new Order
 			{
+				FirstName = orderViewModel.FirstName,
+				LastName = orderViewModel.LastName,
 				Created = DateTime.Now,
 				OrderItems = orderItems
 			};
@@ -223,10 +228,15 @@ namespace RedisEshop.DataServices.WithRedis
 
 			_redisService.RemoveShoppingCart(cartId);
 
-			// update redis (bestsellers)
-			// bud background service provede prepocet všeho - blbé řešení, pomalé
-			// ideálně by se měl aktualizovat jen redis sorted set (problém unikátnosti klíčů)
-			// předělat to jen na IDčka?
+			foreach (var orderItem in orderItems)
+			{
+				_redisService.UpdateBestsellers(new ProductBase
+				{
+					ProductId = orderItem.ProductId.Value,
+					Identifier =orderItem.Product.Identifier,
+					Title = orderItem.Product.Title
+				}, (int)orderItem.Count);
+			}
 		}
 
 		private Guid ResolveShoppingCartId()

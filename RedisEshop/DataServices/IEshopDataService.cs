@@ -9,7 +9,7 @@ namespace RedisEshop.DataServices
 		List<ProductViewModel> GetLatestProducts(int count);
 		List<ProductViewModel> GetProductsByTags(int[] tagIds);
 		List<ProductViewModel> GetRandomProducts(int count);
-		List<ProductViewModel> Bestsellers(int count);
+		List<ProductBaseViewModel> Bestsellers(int count);
 		List<ProductViewModel> GetMostViewedProducts(int count);
 		int AddAndGetProductVisits(int productId);
 		ProductViewModel GetProduct(string identifier);
@@ -20,7 +20,7 @@ namespace RedisEshop.DataServices
 		void AddToShoppingCart(string identifier);
 		void RemoveFromShoppingCart(string identifier);
 		OrderViewModel CreateOrderFromShoppingCart();
-		void ProcessOrder();
+		void ProcessOrder(OrderViewModel orderViewModel);
 		void AddPostalCodeWithSimpleLock(int code, string name);
 		void AddPostalCodeWithRedisLock(int code, string name);
 	}

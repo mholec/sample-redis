@@ -19,7 +19,7 @@ namespace RedisEshop.Controllers
 		[Route("products/home")]
 		public IActionResult Home()
 		{
-			var pageModel = new ProductHomePageModel()
+			var pageModel = new ProductHomePageModel
 			{
 				LatestProducts = _eshopDataService.GetLatestProducts(10),
 				Bestsellers = _eshopDataService.Bestsellers(5),

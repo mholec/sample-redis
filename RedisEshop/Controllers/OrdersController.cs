@@ -26,7 +26,9 @@ namespace RedisEshop.Controllers
 		[HttpPost]
 		public IActionResult Process(OrderViewModel inputModel)
 		{
-			return View();
+			_eshopDataService.ProcessOrder(inputModel);
+
+			return RedirectToAction("Home", "Products");
 		}
 
 		[Route("orders/municipalities/{postalCode}")]

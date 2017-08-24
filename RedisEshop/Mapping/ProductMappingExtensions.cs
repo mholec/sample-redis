@@ -16,10 +16,19 @@ namespace RedisEshop.Mapping
 				Identifier = x.Identifier,
 				ProductId = x.ProductId,
 				Title = x.Title,
-				PurchasesCount = x.Likes,
 				Views = x.Views,
 				Added = x.Added,
 				Tags = x.ProductTags != null ? x.ProductTags.Where(t => t.Tag != null).Select(pt => pt.Tag.Title).ToList() : new List<string>()
+			}).ToList();
+		}
+
+		public static List<ProductBaseViewModel> ToViewModel(this IQueryable<ProductBase> products)
+		{
+			return products.Select(x => new ProductBaseViewModel
+			{
+				Identifier = x.Identifier,
+				ProductId = x.ProductId,
+				Title = x.Title,
 			}).ToList();
 		}
 	}

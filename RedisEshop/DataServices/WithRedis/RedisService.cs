@@ -93,14 +93,20 @@ namespace RedisEshop.DataServices.WithRedis
 			return articleIds;
 		}
 
-		// todo: toto je křehké, protože když se změní produkt, změní se tím i jako KEY
-		public Dictionary<Product, double> Bestsellers(int count)
+		public Dictionary<ProductBase, double> Bestsellers(int count)
 		{
 			string keyName = "products:bestsellers";
 
 			SortedSetEntry[] data = _redis.GetDatabase().SortedSetRangeByRankWithScores(keyName, 0, count - 1, Order.Descending);
 
-			return data.ToDictionary(x => JsonConvert.DeserializeObject<Product>(x.Element), x => x.Score);
+			return data.ToDictionary(x => JsonConvert.DeserializeObject<ProductBase>(x.Element), x => x.Score);
+		}
+
+		public void UpdateBestsellers(ProductBase product, int count)
+		{
+			string keyName = "products:bestsellers";
+
+			_redis.GetDatabase().SortedSetIncrement(keyName, JsonConvert.SerializeObject(product), count);
 		}
 
 		public Dictionary<int, double> MostViewedProducts(int count)
@@ -237,7 +243,7 @@ namespace RedisEshop.DataServices.WithRedis
 
 		public void RemoveShoppingCart(Guid id)
 		{
-			_redis.GetDatabase().KeyDelete(id.ToString(), CommandFlags.FireAndForget);
+			_redis.GetDatabase().KeyDelete("shoppingCart:" + id, CommandFlags.FireAndForget);
 		}
 
 		public bool GetLock(string name)

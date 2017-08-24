@@ -103,7 +103,7 @@ namespace RedisEshop.DataServices.NoRedis
 			throw new NotImplementedException();
 		}
 
-		public List<ProductViewModel> Bestsellers(int count)
+		public List<ProductBaseViewModel> Bestsellers(int count)
 		{
 			throw new NotImplementedException();
 		}
@@ -138,7 +138,7 @@ namespace RedisEshop.DataServices.NoRedis
 			throw new NotImplementedException();
 		}
 
-		public void ProcessOrder()
+		public void ProcessOrder(OrderViewModel orderViewModel)
 		{
 			throw new NotImplementedException();
 		}

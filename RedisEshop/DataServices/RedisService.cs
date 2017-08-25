@@ -125,8 +125,8 @@ namespace RedisEshop.DataServices
 		{
 			string keyName = "products:" + productId + ":visits";
 
-			var scoreFromString = _redis.GetDatabase().StringIncrement(keyName, 1);
-			_redis.GetDatabase().SortedSetIncrement("products:visits", productId, 1);
+			long scoreFromString = _redis.GetDatabase().StringIncrement(keyName, 1);
+			//_redis.GetDatabase().SortedSetIncrement("products:visits", productId, 1);
 
 			return (int)scoreFromString;
 		}

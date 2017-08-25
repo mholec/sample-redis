@@ -40,7 +40,7 @@ namespace RedisEshop.Maintenance
 			// úvodní nastavení posledních produktů
 			_redis.GetDatabase().KeyDelete("products:latest");
 			_redis.GetDatabase().KeyDelete("products:latest-ids");
-			var products = _db.Products.OrderByDescending(x => x.ProductId).Take(20).OrderBy(x => x.ProductId).ToList();
+			var products = _db.Products.OrderBy(x => x.ProductId).ToList();
 			products.ForEach(AddNewProduct);
 
 			// úvodní nastavení počtů objednávek

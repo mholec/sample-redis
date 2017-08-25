@@ -161,7 +161,7 @@ namespace RedisEshop.DataServices
 
 			RedisValue result = _redis.GetDatabase().StringGet(keyName);
 
-			return (result.IsInteger) ? (int)result : default(int?);
+			return (int)result;
 		}
 
 		public bool TryAddNewsletterSubscriber(string email)

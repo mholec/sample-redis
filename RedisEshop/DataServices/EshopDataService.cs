@@ -140,16 +140,6 @@ namespace RedisEshop.DataServices
 			}
 		}
 
-		public List<PostalCode> GetMunicipalities(string postalCode)
-		{
-			if (string.IsNullOrEmpty(postalCode) || postalCode.Length != 5)
-			{
-				return new List<PostalCode>();
-			}
-
-			return _redisService.GetPostalCodes(int.Parse(postalCode));
-		}
-
 		public ShoppingCartViewModel GetShoppingCart()
 		{
 			Guid cartId = ResolveShoppingCartId();
@@ -257,21 +247,21 @@ namespace RedisEshop.DataServices
 			}
 		}
 
-		public void AddPostalCodeWithSimpleLock(int code, string name)
+		public void AddPostalCodeWithSimpleLock(int postalCode, string postalName)
 		{
 			_db.PostalCodes.Add(new PostalCode
 			{
-				Code = code,
-				Name = name
+				Code = postalCode,
+				Name = postalName
 			});
 
-			if (_redisService.GetLock(code + name))
+			if (_redisService.GetLock(postalCode + postalName))
 			{
 				// long running operation
 				Thread.Sleep(30000);
 
 				_db.SaveChanges();
-				_redisService.ReleaseLock(code + name);
+				_redisService.ReleaseLock(postalCode + postalName);
 			}
 			else
 			{
@@ -279,15 +269,15 @@ namespace RedisEshop.DataServices
 			}
 		}
 
-		public void AddPostalCodeWithRedisLock(int code, string name)
+		public void AddPostalCodeWithRedisLock(int postalCode, string postalName)
 		{
 			_db.PostalCodes.Add(new PostalCode
 			{
-				Code = code,
-				Name = name
+				Code = postalCode,
+				Name = postalName
 			});
 
-			using (var redisLock = _redisLockFactory.Create(code + name, TimeSpan.FromSeconds(60)))
+			using (var redisLock = _redisLockFactory.Create(postalCode + postalName, TimeSpan.FromSeconds(60)))
 			{
 				if (redisLock.IsAcquired)
 				{

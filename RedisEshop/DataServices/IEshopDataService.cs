@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using RedisEshop.Entities;
 using RedisEshop.ViewModels;
 
 namespace RedisEshop.DataServices
@@ -15,13 +14,12 @@ namespace RedisEshop.DataServices
 		ProductViewModel GetProduct(string identifier);
 		(string, string) NewsletterSubscribe(string email);
 		IEnumerable<string> SendNewsletters();
-		List<PostalCode> GetMunicipalities(string postalCode);
 		ShoppingCartViewModel GetShoppingCart();
 		void AddToShoppingCart(string identifier);
 		void RemoveFromShoppingCart(string identifier);
 		OrderViewModel CreateOrderFromShoppingCart();
 		void ProcessOrder(OrderViewModel orderViewModel);
-		void AddPostalCodeWithSimpleLock(int code, string name);
-		void AddPostalCodeWithRedisLock(int code, string name);
+		void AddPostalCodeWithSimpleLock(int postalCode, string postalName);
+		void AddPostalCodeWithRedisLock(int postalCode, string postalName);
 	}
 }

@@ -26,31 +26,21 @@ namespace RedisEshop.DataServices
 
 		public List<Product> LatestProducts(int count)
 		{
-			string keyName = "products:latest";
-
-			string[] data = _redis.GetDatabase().ListRange(keyName, 0, 10).Select(x => (string)x).ToArray();
+			string[] data = _redis.GetDatabase().ListRange("products:latest", 0, count).Select(x => (string)x).ToArray();
 
 			return data.Select(JsonConvert.DeserializeObject<Product>).ToList();
 		}
 
 		public int[] LatestProductIds(int count)
 		{
-			string keyName = "products:latest-ids";
-
-			RedisValue[] data = _redis
-				.GetDatabase()
-				.ListRange(keyName, 0, 10);
+			RedisValue[] data = _redis.GetDatabase().ListRange("products:latest-ids", 0, 10);
 
 			return data.Select(x => (int)x).ToArray();
 		}
 
 		public int[] RandomProducts(int count)
 		{
-			string keyName = "products:all";
-
-			RedisValue[] data = _redis
-				.GetDatabase()
-				.SetRandomMembers(keyName, count);
+			RedisValue[] data = _redis.GetDatabase().SetRandomMembers("products:all", count);
 
 			return data.Select(x => (int)x).ToArray();
 		}
@@ -96,59 +86,43 @@ namespace RedisEshop.DataServices
 
 		public Dictionary<ProductBase, double> Bestsellers(int count)
 		{
-			string keyName = "products:bestsellers";
-
-			SortedSetEntry[] data = _redis.GetDatabase().SortedSetRangeByRankWithScores(keyName, 0, count - 1, Order.Descending);
+			SortedSetEntry[] data = _redis.GetDatabase().SortedSetRangeByRankWithScores("products:bestsellers", 0, count - 1, Order.Descending);
 
 			return data.ToDictionary(x => JsonConvert.DeserializeObject<ProductBase>(x.Element), x => x.Score);
 		}
 
 		public void UpdateBestsellers(ProductBase product, int count)
 		{
-			string keyName = "products:bestsellers";
-
-			_redis.GetDatabase().SortedSetIncrement(keyName, JsonConvert.SerializeObject(product), count);
+			_redis.GetDatabase().SortedSetIncrement("products:bestsellers", JsonConvert.SerializeObject(product), count);
 		}
 
 		public Dictionary<int, double> MostViewedProducts(int count)
 		{
-			string keyName = "products:visits";
-
 			var data = _redis
 				.GetDatabase()
-				.SortedSetRangeByRankWithScores(keyName, 0, count - 1, Order.Descending);
+				.SortedSetRangeByRankWithScores("products:visits", 0, count - 1, Order.Descending);
 
 			return data.ToDictionary(x => (int)x.Element, x => x.Score);
 		}
 
 		public int AddProductVisit(int productId)
 		{
-			string keyName = "products:" + productId + ":visits";
-
-			long scoreFromString = _redis.GetDatabase().StringIncrement(keyName, 1);
-			//_redis.GetDatabase().SortedSetIncrement("products:visits", productId, 1);
+			//long scoreFromString = _redis.GetDatabase().StringIncrement($"products:{productId}:visits", 1);
+			double scoreFromString =_redis.GetDatabase().SortedSetIncrement("products:visits", productId, 1);
 
 			return (int)scoreFromString;
 		}
 
 		public void CacheSetProduct(Product product)
 		{
-			string keyName = $"product:{product.ProductId}:object";
+			string serialized = JsonConvert.SerializeObject(product);
 
-			var serialized = JsonConvert.SerializeObject(product);
-
-			_redis
-				.GetDatabase()
-				.StringSet(keyName, serialized);
+			_redis.GetDatabase().StringSet($"product:{product.ProductId}:object", serialized);
 		}
 
 		public Product CacheGetProduct(int productId)
 		{
-			string keyName = $"product:{productId}:object";
-
-			string serialized = _redis
-				.GetDatabase()
-				.StringGet(keyName);
+			string serialized = _redis.GetDatabase().StringGet($"product:{productId}:object");
 
 			Product product = JsonConvert.DeserializeObject<Product>(serialized);
 
@@ -157,36 +131,28 @@ namespace RedisEshop.DataServices
 
 		public int? GetProductIdByIdenfitier(string identifier)
 		{
-			string keyName = "mapping:product:identifier-to-id:" + identifier;
-
-			RedisValue result = _redis.GetDatabase().StringGet(keyName);
+			RedisValue result = _redis.GetDatabase().StringGet($"mapping:product:identifier-to-id:{identifier}");
 
 			return (int)result;
 		}
 
 		public bool TryAddNewsletterSubscriber(string email)
 		{
-			string keyName = "newsletter:subscribers";
-
-			bool result = _redis.GetDatabase().SetAdd(keyName, email);
+			bool result = _redis.GetDatabase().SetAdd("newsletter:subscribers", email);
 
 			return result;
 		}
 
 		public void QueueNewsletterWelcomeMail(EmailMessageViewModel email)
 		{
-			string keyName = "emails:newsletter-welcome";
-
 			string value = JsonConvert.SerializeObject(email);
 
-			_redis.GetDatabase().ListLeftPush(keyName, value);
+			_redis.GetDatabase().ListLeftPush("emails:newsletter-welcome", value);
 		}
 
 		public EmailMessageViewModel DequeueNewsletterWelcomeMail()
 		{
-			string keyName = "emails:newsletter-welcome";
-
-			var value = _redis.GetDatabase().ListRightPop(keyName);
+			RedisValue value = _redis.GetDatabase().ListRightPop("emails:newsletter-welcome");
 
 			if (value.IsNullOrEmpty)
 			{
@@ -198,22 +164,9 @@ namespace RedisEshop.DataServices
 			return email;
 		}
 
-		public List<PostalCode> GetPostalCodes(int code)
-		{
-			var data = _redis.GetDatabase()
-				.SortedSetRangeByScoreWithScores("postalcodes", code, code, Exclude.None);
-
-			return data.Select(x => new PostalCode()
-			{
-				Code = (int) x.Score,
-				Name = x.Element
-			}).ToList();
-		}
-
-		// todo: možná to má rovnou vracet dictionary
 		public List<ShoppingCartItemViewModel> GetShoppingCartItems(Guid id)
 		{
-			HashEntry[] items = _redis.GetDatabase().HashGetAll("shoppingCart:" + id);
+			HashEntry[] items = _redis.GetDatabase().HashGetAll($"shoppingCart:{id}");
 
 			return items.Select(x => new ShoppingCartItemViewModel()
 			{
@@ -224,37 +177,37 @@ namespace RedisEshop.DataServices
 
 		public void AddShoppingCartItem(Guid cartId, string identifier, int amount)
 		{
-			_redis.GetDatabase().HashIncrement("shoppingCart:" + cartId, identifier, amount, CommandFlags.FireAndForget);
+			_redis.GetDatabase().HashIncrement($"shoppingCart:{cartId}", identifier, amount, CommandFlags.FireAndForget);
 		}
 
-		public bool HasShoppingCartItem(Guid id, string identifier)
+		public bool HasShoppingCartItem(Guid cartId, string identifier)
 		{
-			return _redis.GetDatabase().HashExists("shoppingCart:" + id, identifier);
+			return _redis.GetDatabase().HashExists($"shoppingCart:{cartId}", identifier);
 		}
 
-		public int CountShoppingCartItem(Guid id, string identifier)
+		public int CountShoppingCartItem(Guid cartId, string identifier)
 		{
-			return (int)_redis.GetDatabase().HashGet("shoppingCart:" + id, identifier);
+			return (int)_redis.GetDatabase().HashGet($"shoppingCart:{cartId}", identifier);
 		}
 
-		public void RemoveShoppingCartItem(Guid id, string identifier)
+		public void RemoveShoppingCartItem(Guid cartId, string identifier)
 		{
-			_redis.GetDatabase().HashDelete("shoppingCart:" + id, identifier, CommandFlags.FireAndForget);
+			_redis.GetDatabase().HashDelete($"shoppingCart:{cartId}", identifier, CommandFlags.FireAndForget);
 		}
 
-		public void RemoveShoppingCart(Guid id)
+		public void RemoveShoppingCart(Guid cartId)
 		{
-			_redis.GetDatabase().KeyDelete("shoppingCart:" + id, CommandFlags.FireAndForget);
+			_redis.GetDatabase().KeyDelete($"shoppingCart:{cartId}", CommandFlags.FireAndForget);
 		}
 
 		public bool GetLock(string name)
 		{
-			return _redis.GetDatabase().StringSet("redis-locks:" + name, 1, TimeSpan.FromSeconds(60), When.NotExists);
+			return _redis.GetDatabase().StringSet($"redis-locks:{name}", 1, TimeSpan.FromSeconds(60), When.NotExists);
 		}
 
 		public bool ReleaseLock(string name)
 		{
-			return _redis.GetDatabase().KeyDelete("redis-locks:" + name);
+			return _redis.GetDatabase().KeyDelete($"redis-locks:{name}");
 		}
 
 		public void Extras()
@@ -310,7 +263,6 @@ namespace RedisEshop.DataServices
             if (index >= 0 && index < channel.Length - 1)
                 return channel.Substring(index + 1);
 
-            //we didn't find the delimeter, so just return the whole thing
             return channel;
         }
 	}

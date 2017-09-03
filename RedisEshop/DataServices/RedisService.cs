@@ -73,7 +73,7 @@ namespace RedisEshop.DataServices
 			}
 
 			// průnik mezi families
-			int[] articleIds = _redis.GetDatabase()
+			int[] productIds = _redis.GetDatabase()
 				.SetCombine(SetOperation.Intersect, familyKeys.Select(x => (RedisKey)x).ToArray())
 				.Select(x => (int)x).ToArray();
 
@@ -81,7 +81,7 @@ namespace RedisEshop.DataServices
 			_redis.GetDatabase().KeyDelete(allTagsTempKey);
 			_redis.GetDatabase().KeyDelete(familyKeys.Select(x => (RedisKey)x).ToArray());
 
-			return articleIds;
+			return productIds;
 		}
 
 		public Dictionary<ProductBase, double> Bestsellers(int count)
